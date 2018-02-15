@@ -6,7 +6,8 @@ public class Arguments {
     private String output = "";
     private int blurKernelSize = 35;
     private boolean verbose = false;
-    private int threshold = 30;
+    private int threshold = 200;
+    private String edgeDetectionAlgorithm = "sobel";
     private int sobelKernelSize = 3;
     private int maxNrOfPoints = 1000;
     private boolean grayscale = false;
@@ -52,6 +53,14 @@ public class Arguments {
 
     public void setThreshold(int treshold) {
         this.threshold = treshold;
+    }
+
+    public String getEdgeDetectionAlgorithm() {
+        return edgeDetectionAlgorithm;
+    }
+
+    public void setEdgeDetectionAlgorithm(String edgeDetectionAlgorithm) {
+        this.edgeDetectionAlgorithm = edgeDetectionAlgorithm;
     }
 
     public int getMaxNrOfPoints() {

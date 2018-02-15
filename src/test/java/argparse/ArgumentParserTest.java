@@ -67,6 +67,35 @@ public class ArgumentParserTest {
     }
 
     @Test
+    public void validEdgeDetectionAlgorithm() {
+        String[] args= {"in.png", "out.png", "-ea", "laplacian"};
+        ArgumentParser argumentParser = new ArgumentParser(args);
+        try {
+            Arguments arguments = argumentParser.process();
+            Assertions.assertNotNull(arguments);
+            Assertions.assertEquals(arguments.getEdgeDetectionAlgorithm(), "laplacian");
+        } catch (ArgParseException e) {
+            Assertions.fail("ArgumentParser should not throw exception!");
+        }
+    }
+
+    @Test
+    public void invalidEdgeDetectionAlgorithm() {
+        String[] args= {"in.png", "out.png", "-ea", "asd"};
+        ArgumentParser argumentParser = new ArgumentParser(args);
+        Throwable exception = Assertions.assertThrows(ArgParseException.class, argumentParser::process);
+        Assertions.assertEquals(exception.getMessage(), "Invalid edge detection algorithm! Allowed values are: sobel, laplacian");
+    }
+
+    @Test
+    public void edgeDetectionAlgorithmMissing() {
+        String[] args= {"in.png", "out.png", "-ea"};
+        ArgumentParser argumentParser = new ArgumentParser(args);
+        Throwable exception = Assertions.assertThrows(ArgParseException.class, argumentParser::process);
+        Assertions.assertEquals(exception.getMessage(), "No argument is present after -ea!");
+    }
+
+    @Test
     public void validSobelKernelSize() {
         String[] args = {"in.png", "out.png", "-sk", "3"};
         ArgumentParser argumentParser = new ArgumentParser(args);

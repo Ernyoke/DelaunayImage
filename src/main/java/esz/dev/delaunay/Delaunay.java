@@ -18,7 +18,7 @@ public class Delaunay {
     }
 
     private Mat createEmptyImage(Size size, int type) {
-        return new Mat(size, type);
+        return Mat.zeros(size, type);
     }
 
     private Mat createEmptyGrayscaleImage(Size size) {
@@ -26,15 +26,15 @@ public class Delaunay {
     }
 
     private Mat createSobelImage(Mat grayImage) {
-        int dept = CvType.CV_16S;
+        int depth = CvType.CV_16S;
         int scale = 1;
         int delta = 0;
 
         Mat gradientX = createEmptyGrayscaleImage(grayImage.size());
-        Imgproc.Sobel(grayImage, gradientX, dept, 1, 0, arguments.getSobelKernelSize(), scale, delta, Core.BORDER_DEFAULT);
+        Imgproc.Sobel(grayImage, gradientX, depth, 1, 0, arguments.getSobelKernelSize(), scale, delta, Core.BORDER_DEFAULT);
 
         Mat gradientY = createEmptyGrayscaleImage(grayImage.size());
-        Imgproc.Sobel(grayImage, gradientY, dept, 0, 1, arguments.getSobelKernelSize(), scale, delta, Core.BORDER_DEFAULT);
+        Imgproc.Sobel(grayImage, gradientY, depth, 0, 1, arguments.getSobelKernelSize(), scale, delta, Core.BORDER_DEFAULT);
 
         Mat absGradientX = createEmptyGrayscaleImage(gradientX.size());
         Core.convertScaleAbs(gradientX, absGradientX);
@@ -48,13 +48,26 @@ public class Delaunay {
         return gradient;
     }
 
+    private Mat createLaplacianImage(Mat grayImage) {
+        int depth = CvType.CV_16S;
+        int scale = 1;
+        int delta = 0;
+
+        Mat gradient = createEmptyGrayscaleImage(grayImage.size());
+        Imgproc.Laplacian(grayImage, gradient, depth, arguments.getSobelKernelSize(), scale, delta, Core.BORDER_DEFAULT);
+        gradient.convertTo(gradient, CvType.CV_8U);
+
+        return gradient;
+    }
+
     private ArrayList<Point> getEdgePoints(Mat gradientImage, int threshold, int maxNrOfPoints) {
         ArrayList<Point> allEdgePoints = new ArrayList();
+        int offset = 127;
         for (int i = 0; i < gradientImage.rows(); ++i) {
             for (int j = 0; j < gradientImage.cols(); ++j) {
                 byte[] pixel = new byte[3];
                 gradientImage.get(i, j, pixel);
-                if (pixel[0] >= threshold) {
+                if (pixel[0] + offset >= threshold) {
                     allEdgePoints.add(new Point(i, j));
                 }
             }
@@ -76,7 +89,7 @@ public class Delaunay {
         if (draw) {
             Mat image = createEmptyGrayscaleImage(size);
             edgePoints.forEach(point -> {
-                image.put((int) Math.round(point.x), (int) Math.round(point.y), 255);
+                image.put((int)point.x, (int)point.y, 255);
             });
             Imgcodecs.imwrite("res/edgepoints.jpg", image);
         }
@@ -250,12 +263,25 @@ public class Delaunay {
         Imgproc.cvtColor(bluredImage, grayscaleImage, Imgproc.COLOR_RGB2GRAY);
         printCreatedGrayScaleFromBlur();
 
-        // create Sobel image
-        Mat sobel = createSobelImage(grayscaleImage);
+        // detect edges
+        Mat detectedEdges = null;
+        switch (arguments.getEdgeDetectionAlgorithm()) {
+            case "sobel:": {
+                detectedEdges = createSobelImage(grayscaleImage);
+                break;
+            }
+            case "laplacian": {
+                detectedEdges = createLaplacianImage(grayscaleImage);
+                break;
+            }
+            default: {
+                throw new DelaunayException("Invalid edgedetection algorithm!");
+            }
+        }
         printCreatedSobelImage();
 
         // get edge points from the image
-        ArrayList<Point> edgePoints = getEdgePoints(sobel, arguments.getThreshold(), arguments.getMaxNrOfPoints());
+        ArrayList<Point> edgePoints = getEdgePoints(detectedEdges, arguments.getThreshold(), arguments.getMaxNrOfPoints());
         drawEdgePoints(edgePoints, originalImage.size(), true);
         printEdgePointsDetected();
 
