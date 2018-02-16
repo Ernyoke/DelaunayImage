@@ -38,6 +38,35 @@ public class ArgumentParserTest {
     }
 
     @Test
+    public void validThreshold() {
+        String[] args = {"in.png", "out.png", "-t", "100"};
+        ArgumentParser argumentParser = new ArgumentParser(args);
+        try {
+            Arguments arguments = argumentParser.process();
+            Assertions.assertNotNull(arguments);
+            Assertions.assertEquals(arguments.getThreshold(), 100);
+        } catch (ArgParseException e) {
+            Assertions.fail("ArgumentParser should not throw exception!");
+        }
+    }
+
+    @Test
+    public void invalidThreshold() {
+        String[] args = {"in.png", "out.png", "-t", "300"};
+        ArgumentParser argumentParser = new ArgumentParser(args);
+        Throwable exception = Assertions.assertThrows(ArgParseException.class, argumentParser::process);
+        Assertions.assertEquals(exception.getMessage(), "Threshold must be between 0 and 255!");
+    }
+
+    @Test
+    public void thresholdMissing() {
+        String[] args = {"in.png", "out.png", "-t"};
+        ArgumentParser argumentParser = new ArgumentParser(args);
+        Throwable exception = Assertions.assertThrows(ArgParseException.class, argumentParser::process);
+        Assertions.assertEquals(exception.getMessage(), "No argument is present after -t!");
+    }
+
+    @Test
     public void validBlurKernelSize() {
         String[] args = {"in.png", "out.png", "-bk", "35"};
         ArgumentParser argumentParser = new ArgumentParser(args);
@@ -56,6 +85,14 @@ public class ArgumentParserTest {
         ArgumentParser argumentParser = new ArgumentParser(args);
         Throwable exception = Assertions.assertThrows(ArgParseException.class, argumentParser::process);
         Assertions.assertEquals(exception.getMessage(), "Blur kernel size must be and odd number!");
+    }
+
+    @Test
+    public void negativedBlurKernelSize() {
+        String[] args = {"in.png", "out.png", "-bk", "-40"};
+        ArgumentParser argumentParser = new ArgumentParser(args);
+        Throwable exception = Assertions.assertThrows(ArgParseException.class, argumentParser::process);
+        Assertions.assertEquals(exception.getMessage(), "Blur kernel size must pe positive!");
     }
 
     @Test

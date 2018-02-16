@@ -39,6 +39,9 @@ public class ArgumentParser {
                     ++i;
                     if (i < args.length) {
                         int kernelSize = parseInt(args[i], arg);
+                        if (kernelSize < 0) {
+                            throw new ArgParseException("Blur kernel size must pe positive!");
+                        }
                         if (kernelSize % 2 == 0) {
                             throw new ArgParseException("Blur kernel size must be and odd number!");
                         }
@@ -55,7 +58,11 @@ public class ArgumentParser {
                 case "-t": {
                     ++i;
                     if (i < args.length) {
-                        arguments.setThreshold(parseInt(args[i], arg));
+                        int threshold = parseInt(args[i], arg);
+                        if (threshold < 0 || threshold > 255) {
+                            throw new ArgParseException("Threshold must be between 0 and 255!");
+                        }
+                        arguments.setThreshold(threshold);
                     } else {
                         throw new ArgParseException("No argument is present after -t!");
                     }
@@ -64,7 +71,11 @@ public class ArgumentParser {
                 case "-max": {
                     ++i;
                     if (i < args.length) {
-                        arguments.setMaxNrOfPoints(parseInt(args[i], arg));
+                        int maxNrOfPoints = parseInt(args[i], arg);
+                        if (maxNrOfPoints < 0) {
+                            throw new ArgParseException("Number of max edge points must be a positive number!");
+                        }
+                        arguments.setMaxNrOfPoints(maxNrOfPoints);
                     } else {
                         throw new ArgParseException("No argument is present after -max!");
                     }

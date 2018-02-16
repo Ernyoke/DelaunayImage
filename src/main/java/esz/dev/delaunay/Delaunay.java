@@ -266,7 +266,7 @@ public class Delaunay {
         // detect edges
         Mat detectedEdges = null;
         switch (arguments.getEdgeDetectionAlgorithm()) {
-            case "sobel:": {
+            case "sobel": {
                 detectedEdges = createSobelImage(grayscaleImage);
                 break;
             }
