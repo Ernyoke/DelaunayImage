@@ -1,5 +1,7 @@
 # DelaunayImage
 
+[![Build Status](https://travis-ci.org/Ernyoke/DelaunayImage.svg?branch=master)](https://travis-ci.org/Ernyoke/DelaunayImage)
+
 ## Description
 Generate artistic images using [Delaunay](https://en.wikipedia.org/wiki/Delaunay_triangulation) triangulation algorithm.
 
