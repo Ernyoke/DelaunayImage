@@ -50,3 +50,11 @@ Example of usage: java -jar delaunay.jar in.png out.png -max 2000 -grayscale
 ```
 
 ## Output examples
+
+## Tips and tricks
+* Laplacian algorithm is very sensitive to noise. Try to smooth out noise by using the right kernel size and sigma values.
+* The number of the triangles is determined by the number of the *-max* points. This will also influence the average area size of the triangles.
+Smaller numbers of triangles will result in bigger ares and probably picture information loss.
+* -v Verbose mode logs out every step of the procedure.
+
+## License
