@@ -3,10 +3,10 @@
 ## Description
 Generate artistic images using [Delaunay](https://en.wikipedia.org/wiki/Delaunay_triangulation) triangulation algorithm.
 
-![alt text](res/img3_out.jpg "Logo Title Text 1")
+![alt text](res/img3_out.jpg "Big")
 
-### Procedure steps:
-1. Blur the original image using *Gaussian blur* procedure.
+### Procedure:
+1. Blur the original image using *Gaussian blur* algorithm.
 2. Create a grayscale image from the blurred image.
 3. Detect edges  using sobel or laplacian algorithm.
 4. Apply a threshold on the image containing the edges of the original image. This serves as a noise reduction procedure.
@@ -14,6 +14,9 @@ Generate artistic images using [Delaunay](https://en.wikipedia.org/wiki/Delaunay
 6. Reconstruct the image using the *Delaunay* mesh.
 
 ## Build
+
+**Java 1.8** is necessary to be able to build the project!
+
 ```
 git clone https://github.com/Ernyoke/DelaunayImage.git
 mvn assembly:assembly -DdescriptorId=jar-with-dependencies
