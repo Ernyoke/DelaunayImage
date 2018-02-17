@@ -15,6 +15,7 @@ public class Arguments {
     private boolean showEdgePoints = false;
     private String outputEdgePoints = "";
     private boolean wireFrame = false;
+    private int thickness = 1;
 
     public String getInput() {
         return input;
@@ -118,5 +119,13 @@ public class Arguments {
 
     public void setWireFrame(boolean wireFrame) {
         this.wireFrame = wireFrame;
+    }
+
+    public int getThickness() {
+        return thickness;
+    }
+
+    public void setThickness(int thickness) {
+        this.thickness = thickness;
     }
 }

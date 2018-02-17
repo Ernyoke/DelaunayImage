@@ -175,44 +175,44 @@ public class Delaunay {
         return image;
     }
 
+    private Scalar calcGrayPixel(Mat originalImage, Point[] vertices) {
+        double[] color = originalImage.get((int) ((vertices[0].y + vertices[1].y + vertices[2].y) / 3.0),
+                (int) ((vertices[0].x + vertices[1].x + vertices[2].x) / 3.0));
+        return new Scalar(color[0]);
+    }
+
+    private Scalar calcColorPixel(Mat originalImage, Point[] vertices) {
+        double[] color = originalImage.get((int) ((vertices[0].y + vertices[1].y + vertices[2].y) / 3.0),
+                (int) ((vertices[0].x + vertices[1].x + vertices[2].x) / 3.0));
+        return new Scalar(color[0], color[1], color[2]);
+    }
+
+    private void drawWireTriangle(Mat image, Point[] vertices, Scalar pixel, int thickness) {
+        Imgproc.line(image, vertices[0], vertices[1], pixel, thickness);
+        Imgproc.line(image, vertices[1], vertices[2], pixel, thickness);
+        Imgproc.line(image, vertices[2], vertices[0], pixel, thickness);
+    }
+
     private Mat createFinalImage(ArrayList<Triangle> triangles, Mat originalImage) {
 
         ImageCreator colorImageCreator = (Mat image, Point[] vertices) -> {
             MatOfPoint matOfPoint = new MatOfPoint();
             matOfPoint.fromArray(vertices);
-            double[] color = originalImage.get((int) ((vertices[0].y + vertices[1].y + vertices[2].y) / 3.0),
-                    (int) ((vertices[0].x + vertices[1].x + vertices[2].x) / 3.0));
-            Imgproc.fillConvexPoly(image, matOfPoint, new Scalar(color[0], color[1], color[2]), 8, 0);
+            Imgproc.fillConvexPoly(image, matOfPoint, calcColorPixel(originalImage, vertices), 8, 0);
         };
 
         ImageCreator grayScaleImageCreator = (Mat image, Point[] vertices) -> {
             MatOfPoint matOfPoint = new MatOfPoint();
             matOfPoint.fromArray(vertices);
-            double[] color = originalImage.get((int) ((vertices[0].y + vertices[1].y + vertices[2].y) / 3.0),
-                    (int) ((vertices[0].x + vertices[1].x + vertices[2].x) / 3.0));
-            Imgproc.fillConvexPoly(image, matOfPoint, new Scalar(color[0]), 8, 0);
+            Imgproc.fillConvexPoly(image, matOfPoint, calcGrayPixel(originalImage, vertices), 8, 0);
         };
 
         ImageCreator colorWireFrameCreator = (Mat image, Point[] vertices) -> {
-            MatOfPoint matOfPoint = new MatOfPoint();
-            int thickness = 1;
-            matOfPoint.fromArray(vertices);
-            double[] color = originalImage.get((int) ((vertices[0].y + vertices[1].y + vertices[2].y) / 3.0),
-                    (int) ((vertices[0].x + vertices[1].x + vertices[2].x) / 3.0));
-            Imgproc.line(image, vertices[0], vertices[1], new Scalar(color[0], color[1], color[2]), thickness);
-            Imgproc.line(image, vertices[1], vertices[2], new Scalar(color[0], color[1], color[2]), thickness);
-            Imgproc.line(image, vertices[2], vertices[0], new Scalar(color[0], color[1], color[2]), thickness);
+            drawWireTriangle(image, vertices, calcColorPixel(originalImage, vertices), arguments.getThickness());
         };
 
         ImageCreator grayScaleWireFrameCreator = (Mat image, Point[] vertices) -> {
-            MatOfPoint matOfPoint = new MatOfPoint();
-            int thickness = 1;
-            matOfPoint.fromArray(vertices);
-            double[] color = originalImage.get((int) ((vertices[0].y + vertices[1].y + vertices[2].y) / 3.0),
-                    (int) ((vertices[0].x + vertices[1].x + vertices[2].x) / 3.0));
-            Imgproc.line(image, vertices[0], vertices[1], new Scalar(color[0]), thickness);
-            Imgproc.line(image, vertices[1], vertices[2], new Scalar(color[0]), thickness);
-            Imgproc.line(image, vertices[2], vertices[0], new Scalar(color[0]), thickness);
+            drawWireTriangle(image, vertices, calcGrayPixel(originalImage, vertices), arguments.getThickness());
         };
 
         ImageCreator imageCreator;
