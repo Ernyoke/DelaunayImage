@@ -236,79 +236,28 @@ public class Delaunay {
         return createImageFormTriangles(triangles, originalImage, imageCreator);
     }
 
-    // -----------------VERBOSE output methods----------------
-    private void printStart() {
-        if (arguments.isVerbose()) {
-            System.out.println("----- DELAUNAYIMAGE ----");
-            System.out.println("Process started in verbose mode");
-        }
-    }
-
-    private void printImageLoaded() {
-        if (arguments.isVerbose()) {
-            System.out.println("Image loaded form location: " + arguments.getInput());
-        }
-    }
-
-    private void printCreatedBlurImage() {
-        if (arguments.isVerbose()) {
-            System.out.println("Applied blur to original image!");
-        }
-    }
-
-    private void printCreatedGrayScaleFromBlur() {
-        if (arguments.isVerbose()) {
-            System.out.println("Grayscale image created from blurred image!");
-        }
-    }
-
-    private void printCreatedSobelImage() {
-        if (arguments.isVerbose()) {
-            System.out.println("Sobel filter applied to grayscale image!");
-        }
-    }
-
-    private void printEdgePointsDetected() {
-        if (arguments.isVerbose()) {
-            System.out.println("Edge points calculated form sobel image!");
-        }
-    }
-
-    private void printMeshCreated() {
-        if (arguments.isVerbose()) {
-            System.out.println("Triangulation finished! Mesh created!");
-        }
-    }
-
-    private void printOutputSaved() {
-        if (arguments.isVerbose()) {
-            System.out.println("Output saved: " + arguments.getOutput());
-        }
-    }
-    // -------------------------------------------------------
-
     public void generate() throws DelaunayException {
         if (arguments == null) {
             throw new DelaunayException("No arguments were set!");
         }
 
-        printStart();
+        Verbose.printStart(arguments);
 
         Mat originalImage = Imgcodecs.imread(arguments.getInput(), Imgcodecs.IMREAD_COLOR);
         if (originalImage.empty()) {
             throw new DelaunayException("Input image could not be loaded from location: " + arguments.getInput());
         }
-        printImageLoaded();
+        Verbose.printImageLoaded(arguments);
 
         // blur the original image
         Mat bluredImage = createEmptyImage(originalImage.size(), originalImage.type());
         Imgproc.GaussianBlur(originalImage, bluredImage, new Size(arguments.getBlurKernelSize(), arguments.getBlurKernelSize()), 0);
-        printCreatedBlurImage();
+        Verbose.printCreatedBlurImage(arguments);
 
         // create grayscale image from the original
         Mat grayscaleImage = createEmptyGrayscaleImage(bluredImage.size());
         Imgproc.cvtColor(bluredImage, grayscaleImage, Imgproc.COLOR_RGB2GRAY);
-        printCreatedGrayScaleFromBlur();
+        Verbose.printCreatedGrayScaleFromBlur(arguments);
 
         // detect edges
         Mat detectedEdges = null;
@@ -325,16 +274,16 @@ public class Delaunay {
                 throw new DelaunayException("Invalid edgedetection algorithm!");
             }
         }
-        printCreatedSobelImage();
+        Verbose.printCreatedSobelImage(arguments);
 
         // get edge points from the image
         ArrayList<Point> edgePoints = getEdgePoints(detectedEdges, arguments.getThreshold(), arguments.getMaxNrOfPoints());
         drawEdgePoints(edgePoints, originalImage.size());
-        printEdgePointsDetected();
+        Verbose.printEdgePointsDetected(arguments);
 
         // get triangles form edge points
         ArrayList<Triangle> triangles = bowyerWatson(edgePoints, originalImage.size());
-        printMeshCreated();
+        Verbose.printMeshCreated(arguments);
 
         // create final image
         Mat finalImage;
@@ -344,6 +293,6 @@ public class Delaunay {
         } catch (Exception e) {
             throw new DelaunayException("Image could not be saved on location: " + arguments.getOutput());
         }
-        printOutputSaved();
+        Verbose.printOutputSaved(arguments);
     }
 }
