@@ -13,17 +13,20 @@ public class Delaunay {
 
     private Arguments arguments;
 
+    private static final Scalar WHITE = new Scalar(255, 255, 255);
+    private static final Scalar BLACK = new Scalar(0, 0, 0);
+
     @FunctionalInterface
     private interface ImageCreator {
-        public void createImage(Mat image, Point[] vertices);
-    };
+        void createImage(Mat image, Point[] vertices);
+    }
 
     public Delaunay(Arguments arguments) {
         this.arguments = arguments;
     }
 
     private Mat createEmptyImage(Size size, int type) {
-        return new Mat(size, type, new Scalar(255, 255, 255));
+        return new Mat(size, type, WHITE);
     }
 
     private Mat createEmptyGrayscaleImage(Size size) {
@@ -93,7 +96,7 @@ public class Delaunay {
     private void drawEdgePoints(ArrayList<Point> edgePoints, Size size) {
         if (arguments.isShowEdgePoints()) {
             Mat image = createEmptyGrayscaleImage(size);
-            image.setTo(new Scalar(0));
+            image.setTo(BLACK);
             edgePoints.forEach(point -> {
                 image.put((int)point.x, (int)point.y, 255);
             });
