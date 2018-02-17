@@ -1,7 +1,10 @@
 package esz.dev.delaunay;
 
 import esz.dev.argparse.Arguments;
+import esz.dev.delaunay.imgwriter.ImageCreator;
+import esz.dev.delaunay.imgwriter.ImgCreatorBuilder;
 import org.opencv.core.*;
+import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
@@ -15,11 +18,6 @@ public class Delaunay {
 
     private static final Scalar WHITE = new Scalar(255, 255, 255);
     private static final Scalar BLACK = new Scalar(0, 0, 0);
-
-    @FunctionalInterface
-    private interface ImageCreator {
-        void createImage(Mat image, Point[] vertices);
-    }
 
     public Delaunay(Arguments arguments) {
         this.arguments = arguments;
@@ -166,74 +164,9 @@ public class Delaunay {
         return triangles;
     }
 
-    private Mat createImageFormTriangles(ArrayList<Triangle> triangles, Mat originalImage, ImageCreator imageCreator) {
-        Mat image = createEmptyImage(originalImage.size(), originalImage.type());
-        triangles.forEach(triangle -> {
-            Point[] vertices = triangle.getVertices();
-            for (int i = 0; i < vertices.length; ++i) {
-                vertices[i] = new Point(vertices[i].y, vertices[i].x);
-            }
-            imageCreator.createImage(image, vertices);
-        });
-        return image;
-    }
-
-    private Scalar calcGrayPixel(Mat originalImage, Point[] vertices) {
-        double[] color = originalImage.get((int) ((vertices[0].y + vertices[1].y + vertices[2].y) / 3.0),
-                (int) ((vertices[0].x + vertices[1].x + vertices[2].x) / 3.0));
-        return new Scalar(color[0]);
-    }
-
-    private Scalar calcColorPixel(Mat originalImage, Point[] vertices) {
-        double[] color = originalImage.get((int) ((vertices[0].y + vertices[1].y + vertices[2].y) / 3.0),
-                (int) ((vertices[0].x + vertices[1].x + vertices[2].x) / 3.0));
-        return new Scalar(color[0], color[1], color[2]);
-    }
-
-    private void drawWireTriangle(Mat image, Point[] vertices, Scalar pixel, int thickness) {
-        Imgproc.line(image, vertices[0], vertices[1], pixel, thickness);
-        Imgproc.line(image, vertices[1], vertices[2], pixel, thickness);
-        Imgproc.line(image, vertices[2], vertices[0], pixel, thickness);
-    }
-
-    private Mat createFinalImage(ArrayList<Triangle> triangles, Mat originalImage) {
-
-        ImageCreator colorImageCreator = (Mat image, Point[] vertices) -> {
-            MatOfPoint matOfPoint = new MatOfPoint();
-            matOfPoint.fromArray(vertices);
-            Imgproc.fillConvexPoly(image, matOfPoint, calcColorPixel(originalImage, vertices), 8, 0);
-        };
-
-        ImageCreator grayScaleImageCreator = (Mat image, Point[] vertices) -> {
-            MatOfPoint matOfPoint = new MatOfPoint();
-            matOfPoint.fromArray(vertices);
-            Imgproc.fillConvexPoly(image, matOfPoint, calcGrayPixel(originalImage, vertices), 8, 0);
-        };
-
-        ImageCreator colorWireFrameCreator = (Mat image, Point[] vertices) -> {
-            drawWireTriangle(image, vertices, calcColorPixel(originalImage, vertices), arguments.getThickness());
-        };
-
-        ImageCreator grayScaleWireFrameCreator = (Mat image, Point[] vertices) -> {
-            drawWireTriangle(image, vertices, calcGrayPixel(originalImage, vertices), arguments.getThickness());
-        };
-
-        ImageCreator imageCreator;
-
-        if (arguments.isGrayscale()) {
-            if (arguments.isWireFrame()) {
-                imageCreator = grayScaleWireFrameCreator;
-            } else {
-                imageCreator = grayScaleImageCreator;
-            }
-        } else {
-            if (arguments.isWireFrame()) {
-                imageCreator = colorWireFrameCreator;
-            } else {
-                imageCreator = colorImageCreator;
-            }
-        }
-        return createImageFormTriangles(triangles, originalImage, imageCreator);
+    private void createFinalImage(ArrayList<Triangle> triangles, Mat originalImage) {
+        ImageCreator imageCreator = ImgCreatorBuilder.getWriter(arguments, triangles, originalImage);
+        imageCreator.createImageFromTriangles();
     }
 
     public void generate() throws DelaunayException {
@@ -286,13 +219,7 @@ public class Delaunay {
         Verbose.printMeshCreated(arguments);
 
         // create final image
-        Mat finalImage;
-        finalImage = createFinalImage(triangles, originalImage);
-        try {
-            Imgcodecs.imwrite(arguments.getOutput(), finalImage);
-        } catch (Exception e) {
-            throw new DelaunayException("Image could not be saved on location: " + arguments.getOutput());
-        }
+        createFinalImage(triangles, originalImage);
         Verbose.printOutputSaved(arguments);
     }
 }

@@ -5,6 +5,8 @@ import esz.dev.argparse.ArgumentParser;
 import esz.dev.delaunay.Delaunay;
 import esz.dev.delaunay.DelaunayException;
 
+import java.io.IOException;
+
 public class Main {
 
     public static void main(String[] args) {

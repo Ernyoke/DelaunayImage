@@ -67,6 +67,13 @@
             <version>5.0.0</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>de.erichseifert.vectorgraphics2d</groupId>
+            <artifactId>VectorGraphics2D</artifactId>
+            <version>0.13</version>
+        </dependency>
+
     </dependencies>
 
 </project>
