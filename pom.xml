@@ -25,7 +25,7 @@
                     <configuration>
                         <archive>
                             <manifest>
-                                <mainClass>Main</mainClass>
+                                <mainClass>esz.dev.Main</mainClass>
                             </manifest>
                         </archive>
                     </configuration>
@@ -39,7 +39,7 @@
                             <index>true</index>
                             <manifest>
                                 <addClasspath>true</addClasspath>
-                                <mainClass>Main</mainClass>
+                                <mainClass>esz.dev.Main</mainClass>
                             </manifest>
                             <manifestEntries>
                                 <mode>development</mode>

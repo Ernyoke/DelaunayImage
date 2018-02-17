@@ -1,3 +1,5 @@
+package esz.dev;
+
 import esz.dev.argparse.ArgParseException;
 import esz.dev.argparse.ArgumentParser;
 import esz.dev.delaunay.Delaunay;
