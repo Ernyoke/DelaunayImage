@@ -13,12 +13,17 @@ public class Delaunay {
 
     private Arguments arguments;
 
+    @FunctionalInterface
+    private interface ImageCreator {
+        public void createImage(Mat image, Point[] vertices);
+    };
+
     public Delaunay(Arguments arguments) {
         this.arguments = arguments;
     }
 
     private Mat createEmptyImage(Size size, int type) {
-        return Mat.zeros(size, type);
+        return new Mat(size, type, new Scalar(255, 255, 255));
     }
 
     private Mat createEmptyGrayscaleImage(Size size) {
@@ -85,13 +90,14 @@ public class Delaunay {
         }
     }
 
-    private void drawEdgePoints(ArrayList<Point> edgePoints, Size size, boolean draw) {
-        if (draw) {
+    private void drawEdgePoints(ArrayList<Point> edgePoints, Size size) {
+        if (arguments.isShowEdgePoints()) {
             Mat image = createEmptyGrayscaleImage(size);
+            image.setTo(new Scalar(0));
             edgePoints.forEach(point -> {
                 image.put((int)point.x, (int)point.y, 255);
             });
-            Imgcodecs.imwrite("res/edgepoints.jpg", image);
+            Imgcodecs.imwrite(arguments.getOutputEdgePoints(), image);
         }
     }
 
@@ -140,7 +146,7 @@ public class Delaunay {
             triangles = goodTriangles;
         }
 
-        if (arguments.isDeleteSuperTriangle()) {
+        if (arguments.isDeleteBorder()) {
             ArrayList<Triangle> superTriangle = createInitialSuperTriangle(imageSize);
             triangles.removeIf(triangle -> {
                 for (Triangle st : superTriangle) {
@@ -157,36 +163,74 @@ public class Delaunay {
         return triangles;
     }
 
-    private Mat createGrayScaleImageFromTriangles(ArrayList<Triangle> triangles, Mat originalImage) {
-        Mat image = createEmptyGrayscaleImage(originalImage.size());
+    private Mat createImageFormTriangles(ArrayList<Triangle> triangles, Mat originalImage, ImageCreator imageCreator) {
+        Mat image = createEmptyImage(originalImage.size(), originalImage.type());
         triangles.forEach(triangle -> {
-            MatOfPoint matOfPoint = new MatOfPoint();
             Point[] vertices = triangle.getVertices();
             for (int i = 0; i < vertices.length; ++i) {
                 vertices[i] = new Point(vertices[i].y, vertices[i].x);
             }
-            matOfPoint.fromArray(vertices);
-            double[] color = originalImage.get((int) ((vertices[0].y + vertices[1].y + vertices[2].y) / 3.0),
-                    (int) ((vertices[0].x + vertices[1].x + vertices[2].x) / 3.0));
-            Imgproc.fillConvexPoly(image, matOfPoint, new Scalar(color[0]), 8, 0);
+            imageCreator.createImage(image, vertices);
         });
         return image;
     }
 
-    private Mat createColorImageFromTriangles(ArrayList<Triangle> triangles, Mat originalImage) {
-        Mat image = createEmptyImage(originalImage.size(), originalImage.type());
-        triangles.forEach(triangle -> {
+    private Mat createFinalImage(ArrayList<Triangle> triangles, Mat originalImage) {
+
+        ImageCreator colorImageCreator = (Mat image, Point[] vertices) -> {
             MatOfPoint matOfPoint = new MatOfPoint();
-            Point[] vertices = triangle.getVertices();
-            for (int i = 0; i < vertices.length; ++i) {
-                vertices[i] = new Point(vertices[i].y, vertices[i].x);
-            }
             matOfPoint.fromArray(vertices);
             double[] color = originalImage.get((int) ((vertices[0].y + vertices[1].y + vertices[2].y) / 3.0),
                     (int) ((vertices[0].x + vertices[1].x + vertices[2].x) / 3.0));
             Imgproc.fillConvexPoly(image, matOfPoint, new Scalar(color[0], color[1], color[2]), 8, 0);
-        });
-        return image;
+        };
+
+        ImageCreator grayScaleImageCreator = (Mat image, Point[] vertices) -> {
+            MatOfPoint matOfPoint = new MatOfPoint();
+            matOfPoint.fromArray(vertices);
+            double[] color = originalImage.get((int) ((vertices[0].y + vertices[1].y + vertices[2].y) / 3.0),
+                    (int) ((vertices[0].x + vertices[1].x + vertices[2].x) / 3.0));
+            Imgproc.fillConvexPoly(image, matOfPoint, new Scalar(color[0]), 8, 0);
+        };
+
+        ImageCreator colorWireFrameCreator = (Mat image, Point[] vertices) -> {
+            MatOfPoint matOfPoint = new MatOfPoint();
+            int thickness = 1;
+            matOfPoint.fromArray(vertices);
+            double[] color = originalImage.get((int) ((vertices[0].y + vertices[1].y + vertices[2].y) / 3.0),
+                    (int) ((vertices[0].x + vertices[1].x + vertices[2].x) / 3.0));
+            Imgproc.line(image, vertices[0], vertices[1], new Scalar(color[0], color[1], color[2]), thickness);
+            Imgproc.line(image, vertices[1], vertices[2], new Scalar(color[0], color[1], color[2]), thickness);
+            Imgproc.line(image, vertices[2], vertices[0], new Scalar(color[0], color[1], color[2]), thickness);
+        };
+
+        ImageCreator grayScaleWireFrameCreator = (Mat image, Point[] vertices) -> {
+            MatOfPoint matOfPoint = new MatOfPoint();
+            int thickness = 1;
+            matOfPoint.fromArray(vertices);
+            double[] color = originalImage.get((int) ((vertices[0].y + vertices[1].y + vertices[2].y) / 3.0),
+                    (int) ((vertices[0].x + vertices[1].x + vertices[2].x) / 3.0));
+            Imgproc.line(image, vertices[0], vertices[1], new Scalar(color[0]), thickness);
+            Imgproc.line(image, vertices[1], vertices[2], new Scalar(color[0]), thickness);
+            Imgproc.line(image, vertices[2], vertices[0], new Scalar(color[0]), thickness);
+        };
+
+        ImageCreator imageCreator;
+
+        if (arguments.isGrayscale()) {
+            if (arguments.isWireFrame()) {
+                imageCreator = grayScaleWireFrameCreator;
+            } else {
+                imageCreator = grayScaleImageCreator;
+            }
+        } else {
+            if (arguments.isWireFrame()) {
+                imageCreator = colorWireFrameCreator;
+            } else {
+                imageCreator = colorImageCreator;
+            }
+        }
+        return createImageFormTriangles(triangles, originalImage, imageCreator);
     }
 
     // -----------------VERBOSE output methods----------------
@@ -282,7 +326,7 @@ public class Delaunay {
 
         // get edge points from the image
         ArrayList<Point> edgePoints = getEdgePoints(detectedEdges, arguments.getThreshold(), arguments.getMaxNrOfPoints());
-        drawEdgePoints(edgePoints, originalImage.size(), true);
+        drawEdgePoints(edgePoints, originalImage.size());
         printEdgePointsDetected();
 
         // get triangles form edge points
@@ -291,11 +335,7 @@ public class Delaunay {
 
         // create final image
         Mat finalImage;
-        if (arguments.isGrayscale()) {
-            finalImage = createGrayScaleImageFromTriangles(triangles, originalImage);
-        } else {
-            finalImage = createColorImageFromTriangles(triangles, originalImage);
-        }
+        finalImage = createFinalImage(triangles, originalImage);
         try {
             Imgcodecs.imwrite(arguments.getOutput(), finalImage);
         } catch (Exception e) {

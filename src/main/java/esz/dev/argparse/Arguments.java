@@ -6,14 +6,15 @@ public class Arguments {
     private String output = "";
     private int blurKernelSize = 35;
     private boolean verbose = false;
-    private int threshold = 200;
+    private int threshold = 150;
     private String edgeDetectionAlgorithm = "sobel";
     private int sobelKernelSize = 3;
     private int maxNrOfPoints = 1000;
     private boolean grayscale = false;
-    private boolean deleteSuperTriangle = false;
+    private boolean deleteBorder = false;
     private boolean showEdgePoints = false;
     private String outputEdgePoints = "";
+    private boolean wireFrame = false;
 
     public String getInput() {
         return input;
@@ -71,7 +72,7 @@ public class Arguments {
         return sobelKernelSize;
     }
 
-    public void setsobelKernelSize(int sobelTreshold) {
+    public void setSobelKernelSize(int sobelTreshold) {
         this.sobelKernelSize = sobelTreshold;
     }
 
@@ -87,12 +88,12 @@ public class Arguments {
         this.grayscale = grayscale;
     }
 
-    public boolean isDeleteSuperTriangle() {
-        return deleteSuperTriangle;
+    public boolean isDeleteBorder() {
+        return deleteBorder;
     }
 
-    public void setDeleteSuperTriangle(boolean deleteSuperTriangle) {
-        this.deleteSuperTriangle = deleteSuperTriangle;
+    public void setDeleteBorder(boolean deleteSuperTriangle) {
+        this.deleteBorder = deleteSuperTriangle;
     }
 
     public boolean isShowEdgePoints() {
@@ -109,5 +110,13 @@ public class Arguments {
 
     public void setOutputEdgePoints(String outputEdgePoints) {
         this.outputEdgePoints = outputEdgePoints;
+    }
+
+    public boolean isWireFrame() {
+        return wireFrame;
+    }
+
+    public void setWireFrame(boolean wireFrame) {
+        this.wireFrame = wireFrame;
     }
 }

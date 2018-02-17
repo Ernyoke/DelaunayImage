@@ -102,7 +102,7 @@ public class ArgumentParser {
                         final int[] acceptedKernels = {1, 3, 5, 7};
                         int kernelSize = parseInt(args[i], arg);
                         if (Arrays.stream(acceptedKernels).anyMatch(size -> size == kernelSize)) {
-                            arguments.setsobelKernelSize(kernelSize);
+                            arguments.setSobelKernelSize(kernelSize);
                         } else {
                             throw new ArgParseException("Accepted sobel kernel sizes are 1, 3, 5, 7!");
                         }
@@ -123,6 +123,13 @@ public class ArgumentParser {
                     } else {
                         throw new ArgParseException("No argument is present after -ep!");
                     }
+                }
+                case "-wire": {
+                    arguments.setWireFrame(true);
+                    break;
+                }
+                case "-dbf": {
+                    arguments.setDeleteBorder(true);
                 }
             }
         }
@@ -148,7 +155,9 @@ public class ArgumentParser {
         System.out.print("-ea <alg>: edge detection algorithm, accepted values for <arg> are: sobel, laplacian. Default value: sobel \n");
         System.out.print("-sk <nr>: sobel kernel size, should be a value from the following set: [1, 3, 5, 7]. Default value: 3 \n");
         System.out.print("-grayscale: setting this flag, the output image will be grayscale. Default value: false \n");
-        System.out.print("-verbose: activate console logging. Default value: false \n");
+        System.out.print("-v: activate console logging. Default value: false \n");
+        System.out.print("-wire: draw only wireframe for the triangles. Default value: false \n");
+        System.out.print("-dbf: Delete border and all of the triangles which have a node on the border. Default value: false \n");
         System.out.print("\n");
         System.out.print("Examples: \n");
         System.out.print("Example of usage: java -jar delaunay.jar in.png out.png -ea laplacian -sk 5 -max 2000 -t 200 -v \n");

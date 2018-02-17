@@ -59,7 +59,9 @@ Example of usage: java -jar delaunay.jar in.png out.png -max 2000 -grayscale
 | --- | --- |
 | ![alt text](res/img1.jpg "Original")| ![alt text](res/img_out_gray.jpg "gray") |
 | java -jar delaunay.jar in.jpg out_color.jpg -ea laplacian -sk 5 -max 2000 -t 200 | java -jar delaunay.jar in.jpg out_color.jpg -max 1000 -t 150 |
-| ![alt text](res/img_lap_out_color.jpg "laplacian") | ![alt text](res/img_out_color.jpg "sobel")
+| ![alt text](res/img_lap_out_color.jpg "laplacian") | ![alt text](res/img_out_color.jpg "sobel") |
+| java -jar delaunay.jar in.jpg wire.jpg -wire | java -jar delaunay.jar in.jpg wire.jpg -wire -dbf |
+| ![alt text](res/wire.jpg "wireframe") | ![alt text](res/wire_dbf.jpg "wireframe_dbf") |
 ## Tips and tricks
 * Laplacian algorithm is very sensitive to noise. Try to smooth out noise by using the right kernel size and sigma values.
 * The number of the triangles is determined by the number of the *-max* points. This will also influence the average area size of the triangles.

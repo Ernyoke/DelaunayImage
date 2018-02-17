@@ -208,4 +208,30 @@ public class ArgumentParserTest {
             Assertions.fail("ArgumentParser should not throw exception!");
         }
     }
+
+    @Test
+    public void wireFrameSet() {
+        String[] args = {"in.png", "out.png", "-wire"};
+        ArgumentParser argumentParser = new ArgumentParser(args);
+        try {
+            Arguments arguments = argumentParser.process();
+            Assertions.assertNotNull(arguments);
+            Assertions.assertTrue(arguments.isWireFrame());
+        } catch (ArgParseException e) {
+            Assertions.fail("ArgumentParser should not throw exception!");
+        }
+    }
+
+    @Test
+    public void deleteBorderSet() {
+        String[] args = {"in.png", "out.png", "-dbf"};
+        ArgumentParser argumentParser = new ArgumentParser(args);
+        try {
+            Arguments arguments = argumentParser.process();
+            Assertions.assertNotNull(arguments);
+            Assertions.assertTrue(arguments.isDeleteBorder());
+        } catch (ArgParseException e) {
+            Assertions.fail("ArgumentParser should not throw exception!");
+        }
+    }
 }
