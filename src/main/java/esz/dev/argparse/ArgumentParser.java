@@ -87,7 +87,7 @@ public class ArgumentParser {
                         String algorithm = args[i];
                         final String[] algorithms = {"sobel", "laplacian"};
                         if (Arrays.stream(algorithms).anyMatch(alg -> algorithm.equals(alg))) {
-                            arguments.setEdgeDetectionAlgorithm(args[i]);
+                            arguments.setEdgeDetectionAlgorithm(EdgeDetectionAlgorithm.valueOf(algorithm));
                         } else {
                             throw new ArgParseException("Invalid edge detection algorithm! Allowed values are: sobel, laplacian");
                         }

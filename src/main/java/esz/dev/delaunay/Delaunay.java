@@ -310,11 +310,11 @@ public class Delaunay {
         // detect edges
         Mat detectedEdges = null;
         switch (arguments.getEdgeDetectionAlgorithm()) {
-            case "sobel": {
+            case SOBEL: {
                 detectedEdges = createSobelImage(grayscaleImage);
                 break;
             }
-            case "laplacian": {
+            case LAPLACIAN: {
                 detectedEdges = createLaplacianImage(grayscaleImage);
                 break;
             }
