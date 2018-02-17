@@ -47,7 +47,9 @@ Example of usage: java -jar delaunay.jar in.png out.png
 -ea <alg>: edge detection algorithm, accepted values for <arg> are: sobel, laplacian. Default value: sobel 
 -sk <nr>: sobel kernel size, should be a value from the following set: [1, 3, 5, 7]. Default value: 3 
 -grayscale: setting this flag, the output image will be grayscale. Default value: false 
--verbose: activate console logging. Default value: false 
+-v: activate console logging. Default value: false 
+-wire: draw only wireframe for the triangles. Default value: false 
+-dbf: Delete border and all of the triangles which have a node on the border. Default value: false 
 
 Examples: 
 Example of usage: java -jar delaunay.jar in.png out.png -ea laplacian -sk 5 -max 2000 -t 200 -v 
