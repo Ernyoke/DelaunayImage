@@ -1,6 +1,7 @@
-package esz.dev.delaunay.imgwriter;
+package esz.dev.delaunay.imgcreator;
 
 import esz.dev.delaunay.Triangle;
+import esz.dev.delaunay.imgcreator.fillcolor.FillColorInterface;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 
@@ -8,14 +9,14 @@ import java.util.ArrayList;
 
 public abstract class ImageCreator {
 
-    protected Mat originalImage;
-    protected ArrayList<Triangle> triangles;
-    protected String outputPath;
-    protected boolean wireFrame;
+    Mat originalImage;
+    ArrayList<Triangle> triangles;
+    String outputPath;
+    boolean wireFrame;
 
-    protected AbstractFillColor fillColor;
+    FillColorInterface fillColor;
 
-    public ImageCreator(ArrayList<Triangle> triangles, Mat originalImage, AbstractFillColor fillColor, String outputPath, boolean wireFrame) {
+    ImageCreator(ArrayList<Triangle> triangles, Mat originalImage, FillColorInterface fillColor, String outputPath, boolean wireFrame) {
         this.originalImage = originalImage;
         this.triangles = triangles;
         this.fillColor = fillColor;
@@ -35,5 +36,5 @@ public abstract class ImageCreator {
     }
 
     public abstract void createTriangle(Point[] vertices);
-    protected abstract void writeToFile();
+    abstract void writeToFile();
 }

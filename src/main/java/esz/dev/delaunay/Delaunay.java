@@ -1,8 +1,8 @@
 package esz.dev.delaunay;
 
 import esz.dev.argparse.Arguments;
-import esz.dev.delaunay.imgwriter.ImageCreator;
-import esz.dev.delaunay.imgwriter.ImgCreatorBuilder;
+import esz.dev.delaunay.imgcreator.ImageCreator;
+import esz.dev.delaunay.imgcreator.ImgCreatorBuilder;
 import org.opencv.core.*;
 import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;

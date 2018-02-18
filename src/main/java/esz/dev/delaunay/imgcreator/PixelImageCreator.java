@@ -1,6 +1,7 @@
-package esz.dev.delaunay.imgwriter;
+package esz.dev.delaunay.imgcreator;
 
 import esz.dev.delaunay.Triangle;
+import esz.dev.delaunay.imgcreator.fillcolor.FillColorInterface;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -23,7 +24,7 @@ public class PixelImageCreator extends ImageCreator {
 
     private Style style;
 
-    public PixelImageCreator(ArrayList<Triangle> triangles, Mat originalImage, AbstractFillColor fillColor,
+    PixelImageCreator(ArrayList<Triangle> triangles, Mat originalImage, FillColorInterface fillColor,
                              String outputPath, boolean wireFrame) {
         super(triangles, originalImage, fillColor, outputPath, wireFrame);
 
@@ -50,7 +51,7 @@ public class PixelImageCreator extends ImageCreator {
     }
 
     @Override
-    protected void writeToFile() {
+    void writeToFile() {
         Imgcodecs.imwrite(outputPath, image);
     }
 }

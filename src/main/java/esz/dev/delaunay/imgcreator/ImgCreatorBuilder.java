@@ -1,7 +1,10 @@
-package esz.dev.delaunay.imgwriter;
+package esz.dev.delaunay.imgcreator;
 
 import esz.dev.argparse.Arguments;
 import esz.dev.delaunay.Triangle;
+import esz.dev.delaunay.imgcreator.fillcolor.BgrFillColor;
+import esz.dev.delaunay.imgcreator.fillcolor.FillColorInterface;
+import esz.dev.delaunay.imgcreator.fillcolor.GrayFillColor;
 import org.opencv.core.Mat;
 
 import java.util.ArrayList;
@@ -9,7 +12,7 @@ import java.util.ArrayList;
 public class ImgCreatorBuilder {
 
     public static ImageCreator getWriter(Arguments arguments, ArrayList<Triangle>triangles, Mat originalImage) {
-        AbstractFillColor fillColor;
+        FillColorInterface fillColor;
         if (arguments.isGrayscale()) {
             fillColor = new GrayFillColor();
         } else {
