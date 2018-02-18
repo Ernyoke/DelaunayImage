@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/Ernyoke/DelaunayImage.svg?branch=master)](https://travis-ci.org/Ernyoke/DelaunayImage)
 
 ## Description
-Generate artistic images using [Delaunay](https://en.wikipedia.org/wiki/Delaunay_triangulation) triangulation algorithm.
+Generate artistic bitmap and/or vector graphic images using [Delaunay](https://en.wikipedia.org/wiki/Delaunay_triangulation) triangulation algorithm.
 
 ![alt text](res/img3_out.jpg "Big")
 
@@ -14,6 +14,7 @@ Generate artistic images using [Delaunay](https://en.wikipedia.org/wiki/Delaunay
 4. Apply a threshold on the image containing the edges of the original image. This serves as a noise reduction procedure.
 5. Get the remaining points and create a *Delaunay* mesh using the [Bowyer-Watson](https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm) algorithm.
 6. Reconstruct the image using the *Delaunay* mesh.
+7. Save the final image.
 
 ## Build
 
@@ -27,6 +28,7 @@ mvn assembly:assembly -DdescriptorId=jar-with-dependencies
 ### Dependecies
 * OpenCV
 * JUnit5
+* [VectorGraphics2D](https://github.com/eseifert/vectorgraphics2d)
 
 ## Example of usage
 
@@ -36,8 +38,11 @@ mvn assembly:assembly -DdescriptorId=jar-with-dependencies
 java -jar delaunay.jar <intput path> <output path> [args]
 
 Mandatory (stationary) arguments: <input path> <output path>.
-<input path>: path to the input image. Extensions supported: .jpg, .jpeg, .png
-<input path>: path to where the output image should be saved. Extensions supported for the output image: .jpg, .jpeg, .png
+<input path>: path to the input image.
+Extensions supported for input image: [all the extensions supported by opencv, see: https://docs.opencv.org/3.0-beta/modules/imgcodecs/doc/reading_and_writing_images.html] 
+<output path>: path to where the output image should be saved.
+Extensions supported for bitmap output image: [all the extensions supported by opencv, see: https://docs.opencv.org/3.0-beta/modules/imgcodecs/doc/reading_and_writing_images.html] 
+Extensions supported for vector graphic output image: .svg, .eps (.pdf is currently no supported!)
 
 Example of usage: java -jar delaunay.jar in.png out.png 
 

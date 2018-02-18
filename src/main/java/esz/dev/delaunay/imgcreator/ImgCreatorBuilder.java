@@ -20,7 +20,7 @@ public class ImgCreatorBuilder {
         }
 
         ImageCreator imageCreator;
-        if (arguments.getOutput().endsWith(".svg")) {
+        if (arguments.getOutput().endsWith(".svg") || arguments.getOutput().endsWith(".eps")) {
             imageCreator = new VectorImageCreator(triangles, originalImage, fillColor, arguments.getOutput(),
                     arguments.isWireFrame());
         } else {

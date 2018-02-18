@@ -144,8 +144,11 @@ public class ArgumentParser {
         System.out.print("java -jar delaunay.jar <intput path> <output path> [args]\n");
         System.out.print("\n");
         System.out.print("Mandatory (stationary) arguments: <input path> <output path>.\n");
-        System.out.print("<input path>: path to the input image. Extensions supported: .jpg, .jpeg, .png\n");
-        System.out.print("<input path>: path to where the output image should be saved. Extensions supported for the output image: .jpg, .jpeg, .png\n");
+        System.out.print("<input path>: path to the input image.\n");
+        System.out.print("Extensions supported for input image: [all the extensions supported by opencv, see: https://docs.opencv.org/3.0-beta/modules/imgcodecs/doc/reading_and_writing_images.html] \n");
+        System.out.print("<output path>: path to where the output image should be saved.\n");
+        System.out.print("Extensions supported for bitmap output image: [all the extensions supported by opencv, see: https://docs.opencv.org/3.0-beta/modules/imgcodecs/doc/reading_and_writing_images.html] \n");
+        System.out.print("Extensions supported for vector graphic output image: .svg, .eps (.pdf is currently no supported!)\n");
         System.out.print("\n");
         System.out.print("Example of usage: java -jar delaunay.jar in.png out.png \n");
         System.out.print("\n");
