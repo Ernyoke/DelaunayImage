@@ -13,8 +13,14 @@ public class Triangle {
         this.ab = new Edge(a, b);
         this.bc = new Edge(b, c);
         this.ca = new Edge(c, a);
-
         calculateCircumCircle(a, b, c);
+    }
+
+    public Triangle(Edge ab, Edge bc, Edge ca) {
+        this.ab = ab;
+        this.bc = bc;
+        this.ca = ca;
+        calculateCircumCircle(ab.getA(),ab.getB(), ca.getA());
     }
 
     // https://en.wikipedia.org/wiki/Circumscribed_circle#Triangles

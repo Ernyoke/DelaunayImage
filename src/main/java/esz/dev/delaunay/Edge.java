@@ -31,6 +31,14 @@ public class Edge {
                 ((Math.abs(this.b.x - vertex.x) < d) && (Math.abs(this.b.y - vertex.y) < d));
     }
 
+    public boolean isOnTheRightSide(Point p) {
+        return (p.x - a.x) * (b.y - a.y) - (b.x - a.x) * (p.y - a.y) > 0;
+    }
+
+    public Edge getInvert() {
+        return new Edge(b, a);
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other instanceof Edge) {

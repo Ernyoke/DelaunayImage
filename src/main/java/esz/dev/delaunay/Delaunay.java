@@ -1,6 +1,8 @@
 package esz.dev.delaunay;
 
 import esz.dev.argparse.Arguments;
+import esz.dev.circularlist.CircularList;
+import esz.dev.circularlist.Node;
 import esz.dev.delaunay.imgcreator.ImageCreator;
 import esz.dev.delaunay.imgcreator.ImgCreatorBuilder;
 import org.opencv.core.*;
@@ -8,9 +10,7 @@ import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
 
 public class Delaunay {
 
@@ -96,7 +96,7 @@ public class Delaunay {
             Mat image = createEmptyGrayscaleImage(size);
             image.setTo(BLACK);
             edgePoints.forEach(point -> {
-                image.put((int)point.x, (int)point.y, 255);
+                image.put((int) point.x, (int) point.y, 255);
             });
             Imgcodecs.imwrite(arguments.getOutputEdgePoints(), image);
         }
@@ -164,6 +164,57 @@ public class Delaunay {
         return triangles;
     }
 
+    private ArrayList<Triangle> simpleSweepLine(ArrayList<Point> edgePoints, Size imageSize) {
+        ArrayList<Triangle> triangles = new ArrayList<>();
+        CircularList<Edge> hull = new CircularList<>();
+        Collections.sort(edgePoints, Comparator.comparingDouble(a -> a.x));
+
+        // initialize the hull with the first triangle
+        Edge firstEdge = new Edge(edgePoints.get(0), edgePoints.get(1));
+        if (!firstEdge.isOnTheRightSide(edgePoints.get(2))) {
+            hull.addLast(new Edge(edgePoints.get(0), edgePoints.get(1)));
+            hull.addLast(new Edge(edgePoints.get(1), edgePoints.get(2)));
+            hull.addLast(new Edge(edgePoints.get(2), edgePoints.get(0)));
+            triangles.add(new Triangle(edgePoints.get(0), edgePoints.get(1), edgePoints.get(2)));
+        } else {
+            hull.addLast(new Edge(edgePoints.get(1), edgePoints.get(0)));
+            hull.addLast(new Edge(edgePoints.get(0), edgePoints.get(2)));
+            hull.addLast(new Edge(edgePoints.get(2), edgePoints.get(1)));
+            triangles.add(new Triangle(edgePoints.get(1), edgePoints.get(0), edgePoints.get(2)));
+        }
+
+        for (int i = 3; i < edgePoints.size(); i++) {
+            Point currentPoint = edgePoints.get(i);
+//            Node<Edge> currentNode = hull;
+//
+//            while (currentNode.getNextNode() != hull) {
+//                Edge currentEdge = currentNode.getNextNode().getContent();
+//                if (!currentEdge.containsVertex(currentPoint) && currentEdge.isOnTheRightSide(currentPoint)) {
+//                    Edge lowerEdge = new Edge(currentEdge.getA(), currentPoint);
+//                    Edge higherEdge = new Edge(currentPoint, currentEdge.getB());
+//                    triangles.add(new Triangle(lowerEdge, currentEdge, higherEdge));
+//                    if (currentNode.getNextNode().getContent().equals(higherEdge.getInvert())) {
+//                        currentNode.setNextNode(currentNode.getNextNode().getNextNode());
+//                    } else {
+//                        Node<Edge> node = new Node<>(higherEdge);
+//                        node.setPreviousNode(currentNode);
+//                        node.setNextNode(currentNode.getNextNode());
+//                        currentNode.setNextNode(node);
+//                    }
+//                    if (currentNode.getPreviousNode().getContent().equals(lowerEdge.getInvert())) {
+//                        currentNode.setPreviousNode(currentNode.getPreviousNode().getPreviousNode());
+//                    } else {
+//                        Node<Edge> node = new Node<>(higherEdge);
+//                        node.setPreviousNode(currentNode.getPreviousNode());
+//                        node.setNextNode(currentNode);
+//                        currentNode.setPreviousNode(node);
+//                    }
+//                }
+//            }
+        }
+        return triangles;
+    }
+
     private void createFinalImage(ArrayList<Triangle> triangles, Mat originalImage) {
         ImageCreator imageCreator = ImgCreatorBuilder.getWriter(arguments, triangles, originalImage);
         imageCreator.createImageFromTriangles();
@@ -215,7 +266,8 @@ public class Delaunay {
         Verbose.printEdgePointsDetected(arguments);
 
         // get triangles form edge points
-        ArrayList<Triangle> triangles = bowyerWatson(edgePoints, originalImage.size());
+//        ArrayList<Triangle> triangles = bowyerWatson(edgePoints, originalImage.size());
+        ArrayList<Triangle> triangles = simpleSweepLine(edgePoints, originalImage.size());
         Verbose.printMeshCreated(arguments);
 
         // create final image
