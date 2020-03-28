@@ -4,10 +4,10 @@ import esz.dev.argparse.Arguments;
 import esz.dev.delaunay.imgcreator.ImageCreator;
 import esz.dev.delaunay.imgcreator.ImgCreatorBuilder;
 import org.opencv.core.*;
-import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -164,12 +164,12 @@ public class Delaunay {
         return triangles;
     }
 
-    private void createFinalImage(ArrayList<Triangle> triangles, Mat originalImage) {
+    private void createFinalImage(ArrayList<Triangle> triangles, Mat originalImage) throws IOException {
         ImageCreator imageCreator = ImgCreatorBuilder.getWriter(arguments, triangles, originalImage);
         imageCreator.createImageFromTriangles();
     }
 
-    public void generate() throws DelaunayException {
+    public void generate() throws DelaunayException, IOException {
         if (arguments == null) {
             throw new DelaunayException("No arguments were set!");
         }

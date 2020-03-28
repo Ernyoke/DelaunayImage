@@ -6,5 +6,6 @@ import org.opencv.core.Scalar;
 
 public interface FillColorInterface {
     Scalar getFillColor(Mat originalImage, Point[] vertices);
+
     int getImageType();
 }

@@ -5,7 +5,6 @@ import de.erichseifert.vectorgraphics2d.Processor;
 import de.erichseifert.vectorgraphics2d.VectorGraphics2D;
 import de.erichseifert.vectorgraphics2d.eps.EPSProcessor;
 import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
-import de.erichseifert.vectorgraphics2d.pdf.PDFProcessor;
 import de.erichseifert.vectorgraphics2d.svg.SVGProcessor;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 import esz.dev.delaunay.Triangle;
@@ -19,6 +18,7 @@ import java.awt.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class VectorImageCreator extends ImageCreator {
 
@@ -35,10 +35,8 @@ public class VectorImageCreator extends ImageCreator {
                               String outputPath, boolean wireFrame) {
         super(triangles, originalImage, fillColor, outputPath, wireFrame);
 
-        if (wireFrame) {
-            style = (int[] xVec, int[] yVec) -> {
-                vg2d.fillPolygon(xVec, yVec, 3);
-            };
+        if (!wireFrame) {
+            style = (int[] xVec, int[] yVec) -> vg2d.fillPolygon(xVec, yVec, 3);
         } else {
             style = (int[] xVec, int[] yVec) -> {
                 vg2d.fillPolygon(xVec, yVec, 3);
@@ -57,26 +55,22 @@ public class VectorImageCreator extends ImageCreator {
     }
 
     @Override
-    void writeToFile() {
+    void writeToFile() throws IOException {
         CommandSequence commands = ((VectorGraphics2D) vg2d).getCommands();
-        Processor processor = processorBuilder();
+        Processor processor = processorBuilder().orElseThrow(() -> new RuntimeException("No processor available!"));
         Size size = originalImage.size();
         Document document = processor.getDocument(commands, new PageSize(size.width, size.height));
-        try {
-            document.writeTo(new FileOutputStream(outputPath));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        document.writeTo(new FileOutputStream(outputPath));
     }
 
-    private Processor processorBuilder() {
+    private Optional<Processor> processorBuilder() {
         if (outputPath.endsWith(".svg")) {
-            return new SVGProcessor();
+            return Optional.of(new SVGProcessor());
         }
         if (outputPath.endsWith(".eps")) {
-            return new EPSProcessor();
+            return Optional.of(new EPSProcessor());
         }
-        return null;
+        return Optional.empty();
     }
 
     private Color scalarToColor(Scalar scalar) {

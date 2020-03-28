@@ -16,12 +16,12 @@ public class Main {
         ArgumentParser argumentParser = new ArgumentParser(args);
         try {
             argumentParser.process();
-            Delaunay delayun = new Delaunay(argumentParser.process());
-            delayun.generate();
+            Delaunay delaunay = new Delaunay(argumentParser.process());
+            delaunay.generate();
         } catch (ArgParseException e) {
             System.out.println("Error: " + e.getMessage());
             ArgumentParser.showHelp();
-        } catch (DelaunayException e) {
+        } catch (DelaunayException | IOException e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
