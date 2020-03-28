@@ -1,2 +1,9 @@
 language: java
 script: mvn clean verify
+env:
+  global:
+    secure: VQO5idIOkV+5xetvBMBXm4uFI561aDL92MZbS79QJpHcxN8yuKWNGgWcGnCzl2tQjGpJeCG9+PPWLeB9zsr9aP58L4PLvLBc+xplNCumToY227AF2kEP8qGrvKqC3WNdYS4W9OoDG5AYNZP9jjCrcYQx9A5f3aK5HbEv/0cddNtKiQydq+iZVwWOMyTl0gY4ONNYwYMDtx/+3lZraw4DZ+nsPmEHt8iIekmXMmOXODn/GtVUzBYBCgNOzlKOi/HPJDKgS9iG8lEMIsnRdCZkaHsUsH2HdXhtRtVM0dMYOKgolHz0lYKqcA3nhT9UJhVFBqtDIRmFfIKf7igc3MMxgngc1L9gf/Gn8E1mYZsL/sBXMUml4BIOW7JLnAIZc9b9sVMy0EjUqAwDh8SXPOqGsMwHZADIka/TaaQlOlXMIiU68MmIQSpuCakeKTWDNP9/FKeTGRtU6bPYYm2V6KFkAd/u/14PfofIgXWgevW/46ha2hxGtYZ+HLD/OWufGhGImQLe1zWInsPwp434qraUJe+0PymA8HU1s1q/EDiSNPrsSFr8SfzSAQFsFHqDQV9P3dXcA3XrVK5+2B/RrTYp4sND+4TvyhBaD6Z7F8604njTTfpWxGUAJ/0fzFAn56YFNItD4QbqqlDHgPsCjHk9jDDRVhJd0OmdFr1vA/nyYR4=
+
+script:
+  # the following command line builds the project, runs the tests with coverage and then execute the SonarCloud analysis
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=Ernyoke_DelaunayImage
