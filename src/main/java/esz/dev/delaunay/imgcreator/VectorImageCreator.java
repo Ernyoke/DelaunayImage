@@ -35,7 +35,7 @@ public class VectorImageCreator extends ImageCreator {
                               String outputPath, boolean wireFrame) {
         super(triangles, originalImage, fillColor, outputPath, wireFrame);
 
-        if (!wireFrame) {
+        if (wireFrame) {
             style = (int[] xVec, int[] yVec) -> vg2d.fillPolygon(xVec, yVec, 3);
         } else {
             style = (int[] xVec, int[] yVec) -> {
