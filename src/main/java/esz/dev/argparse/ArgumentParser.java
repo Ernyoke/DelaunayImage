@@ -4,32 +4,32 @@ import java.util.Arrays;
 
 public class ArgumentParser {
 
-    private String[] args;
+    private final String[] args;
 
     public ArgumentParser(String[] args) {
         this.args = args;
     }
 
-    private int parseInt(String argToPParse, String prevArg) throws ArgParseException {
+    private int parseInt(String argToPParse, String prevArg) {
         if (argToPParse == null) {
-            throw new ArgParseException("No argument is present after " + prevArg + "!");
+            throw new IllegalArgumentException("No argument is present after " + prevArg + "!");
         }
         try {
             return Integer.parseInt(argToPParse);
-        } catch (NumberFormatException  e) {
-            throw new ArgParseException("Invalid argument after " + prevArg + "!");
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid argument after " + prevArg + "!");
         }
     }
 
-    public Arguments process() throws ArgParseException {
-        Arguments arguments = new Arguments();
+    public Arguments process() {
+        Arguments.ArgumentsBuilder builder = Arguments.builder();
 
         // Mandatory arguments
         if (args.length < 2) {
-            throw new ArgParseException("Input and output paths are mandatory arguments!");
+            throw new IllegalArgumentException("Input and output paths are mandatory arguments!");
         } else {
-            arguments.setInput(args[0]);
-            arguments.setOutput(args[1]);
+            builder.input(args[0]);
+            builder.output(args[1]);
         }
 
         for (int i = 0; i < args.length; ++i) {
@@ -40,19 +40,19 @@ public class ArgumentParser {
                     if (i < args.length) {
                         int kernelSize = parseInt(args[i], arg);
                         if (kernelSize < 0) {
-                            throw new ArgParseException("Blur kernel size must pe positive!");
+                            throw new IllegalArgumentException("Blur kernel size must pe positive!");
                         }
                         if (kernelSize % 2 == 0) {
-                            throw new ArgParseException("Blur kernel size must be and odd number!");
+                            throw new IllegalArgumentException("Blur kernel size must be and odd number!");
                         }
-                        arguments.setBlurKernelSize(kernelSize);
+                        builder.blurKernelSize(kernelSize);
                     } else {
-                        throw new ArgParseException("No argument is present after -bk!");
+                        throw new IllegalArgumentException("No argument is present after -bk!");
                     }
                     break;
                 }
                 case "-v": {
-                    arguments.setVerbose(true);
+                    builder.verbose(true);
                     break;
                 }
                 case "-t": {
@@ -60,11 +60,11 @@ public class ArgumentParser {
                     if (i < args.length) {
                         int threshold = parseInt(args[i], arg);
                         if (threshold < 0 || threshold > 255) {
-                            throw new ArgParseException("Threshold must be between 0 and 255!");
+                            throw new IllegalArgumentException("Threshold must be between 0 and 255!");
                         }
-                        arguments.setThreshold(threshold);
+                        builder.threshold(threshold);
                     } else {
-                        throw new ArgParseException("No argument is present after -t!");
+                        throw new IllegalArgumentException("No argument is present after -t!");
                     }
                     break;
                 }
@@ -73,11 +73,11 @@ public class ArgumentParser {
                     if (i < args.length) {
                         int maxNrOfPoints = parseInt(args[i], arg);
                         if (maxNrOfPoints < 0) {
-                            throw new ArgParseException("Number of max edge points must be a positive number!");
+                            throw new IllegalArgumentException("Number of max edge points must be a positive number!");
                         }
-                        arguments.setMaxNrOfPoints(maxNrOfPoints);
+                        builder.maxNrOfPoints(maxNrOfPoints);
                     } else {
-                        throw new ArgParseException("No argument is present after -max!");
+                        throw new IllegalArgumentException("No argument is present after -max!");
                     }
                     break;
                 }
@@ -85,14 +85,10 @@ public class ArgumentParser {
                     ++i;
                     if (i < args.length) {
                         String algorithm = args[i];
-                        final String[] algorithms = {"sobel", "laplacian"};
-                        if (Arrays.stream(algorithms).anyMatch(alg -> algorithm.equals(alg))) {
-                            arguments.setEdgeDetectionAlgorithm(EdgeDetectionAlgorithm.valueOf(algorithm));
-                        } else {
-                            throw new ArgParseException("Invalid edge detection algorithm! Allowed values are: sobel, laplacian");
-                        }
+                        builder.edgeDetectionAlgorithm(EdgeDetectionAlgorithm.fromString(algorithm).orElseThrow(() ->
+                                new IllegalArgumentException("Invalid edge detection algorithm! Allowed values are: sobel, laplacian")));
                     } else {
-                        throw new ArgParseException("No argument is present after -ea!");
+                        throw new IllegalArgumentException("No argument is present after -ea!");
                     }
                     break;
                 }
@@ -102,39 +98,39 @@ public class ArgumentParser {
                         final int[] acceptedKernels = {1, 3, 5, 7};
                         int kernelSize = parseInt(args[i], arg);
                         if (Arrays.stream(acceptedKernels).anyMatch(size -> size == kernelSize)) {
-                            arguments.setSobelKernelSize(kernelSize);
+                            builder.sobelKernelSize(kernelSize);
                         } else {
-                            throw new ArgParseException("Accepted sobel kernel sizes are 1, 3, 5, 7!");
+                            throw new IllegalArgumentException("Accepted sobel kernel sizes are 1, 3, 5, 7!");
                         }
                     } else {
-                        throw new ArgParseException("No argument is present after -sk!");
+                        throw new IllegalArgumentException("No argument is present after -sk!");
                     }
                     break;
                 }
                 case "-grayscale": {
-                    arguments.setGrayscale(true);
+                    builder.grayscale(true);
                     break;
                 }
-                case "-ep" : {
+                case "-ep": {
                     ++i;
                     if (i < args.length) {
-                        arguments.setShowEdgePoints(true);
-                        arguments.setOutputEdgePoints(args[i]);
+                        builder.showEdgePoints(true);
+                        builder.outputEdgePoints(args[i]);
                     } else {
-                        throw new ArgParseException("No argument is present after -ep!");
+                        throw new IllegalArgumentException("No argument is present after -ep!");
                     }
                 }
                 case "-wire": {
-                    arguments.setWireFrame(true);
+                    builder.wireFrame(true);
                     break;
                 }
                 case "-dbf": {
-                    arguments.setDeleteBorder(true);
+                    builder.deleteBorder(true);
                 }
             }
         }
 
-        return arguments;
+        return builder.build();
     }
 
     public static void showHelp() {

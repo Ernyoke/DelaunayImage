@@ -6,17 +6,17 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 public abstract class ImageCreator {
     protected Mat originalImage;
-    protected ArrayList<Triangle> triangles;
+    protected List<Triangle> triangles;
     protected String outputPath;
     protected boolean wireFrame;
 
     protected FillColorInterface fillColor;
 
-    ImageCreator(ArrayList<Triangle> triangles, Mat originalImage, FillColorInterface fillColor, String outputPath, boolean wireFrame) {
+    ImageCreator(List<Triangle> triangles, Mat originalImage, FillColorInterface fillColor, String outputPath, boolean wireFrame) {
         this.originalImage = originalImage;
         this.triangles = triangles;
         this.fillColor = fillColor;

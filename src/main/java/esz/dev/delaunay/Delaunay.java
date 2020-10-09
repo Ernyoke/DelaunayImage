@@ -1,6 +1,7 @@
 package esz.dev.delaunay;
 
 import esz.dev.argparse.Arguments;
+import esz.dev.argparse.EdgeDetectionAlgorithm;
 import esz.dev.delaunay.imgcreator.ImageCreator;
 import esz.dev.delaunay.imgcreator.ImgCreatorBuilder;
 import org.opencv.core.*;
@@ -8,13 +9,12 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
+import java.util.function.Function;
 
 public class Delaunay {
 
-    private Arguments arguments;
+    private final Arguments arguments;
 
     private static final Scalar WHITE = new Scalar(255, 255, 255);
     private static final Scalar BLACK = new Scalar(0, 0, 0);
@@ -66,8 +66,8 @@ public class Delaunay {
         return gradient;
     }
 
-    private ArrayList<Point> getEdgePoints(Mat gradientImage, int threshold, int maxNrOfPoints) {
-        ArrayList<Point> allEdgePoints = new ArrayList();
+    private List<Point> getEdgePoints(Mat gradientImage, int threshold, int maxNrOfPoints) {
+        List<Point> allEdgePoints = new ArrayList();
         int offset = 127;
         for (int i = 0; i < gradientImage.rows(); ++i) {
             for (int j = 0; j < gradientImage.cols(); ++j) {
@@ -82,7 +82,7 @@ public class Delaunay {
         if (allEdgePoints.size() <= maxNrOfPoints) {
             return allEdgePoints;
         } else {
-            ArrayList<Point> edgePoints = new ArrayList<>();
+            List<Point> edgePoints = new ArrayList<>();
             double counter = (double) allEdgePoints.size() / maxNrOfPoints;
             for (double i = 0.0; i < allEdgePoints.size(); i += counter) {
                 edgePoints.add(allEdgePoints.get((int) Math.floor(i)));
@@ -91,31 +91,29 @@ public class Delaunay {
         }
     }
 
-    private void drawEdgePoints(ArrayList<Point> edgePoints, Size size) {
+    private void drawEdgePoints(List<Point> edgePoints, Size size) {
         if (arguments.isShowEdgePoints()) {
             Mat image = createEmptyGrayscaleImage(size);
             image.setTo(BLACK);
-            edgePoints.forEach(point -> {
-                image.put((int)point.x, (int)point.y, 255);
-            });
+            edgePoints.forEach(point -> image.put((int) point.x, (int) point.y, 255));
             Imgcodecs.imwrite(arguments.getOutputEdgePoints(), image);
         }
     }
 
-    private ArrayList<Triangle> createInitialSuperTriangle(Size size) {
+    private List<Triangle> createInitialSuperTriangle(Size size) {
         Point a = new Point(0.0, 0.0);
         Point b = new Point(size.height - 1, 0.0);
         Point c = new Point(size.height - 1, size.width - 1);
         Point d = new Point(0.0, size.width - 1);
-        return new ArrayList<>(Arrays.asList(new Triangle(a, b, c), new Triangle(a, c, d)));
+        return List.of(new Triangle(a, b, c), new Triangle(a, c, d));
     }
 
     // https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm
-    private ArrayList<Triangle> bowyerWatson(ArrayList<Point> edgePoints, Size imageSize) {
-        ArrayList<Triangle> triangles = createInitialSuperTriangle(imageSize);
+    private List<Triangle> bowyerWatson(List<Point> edgePoints, Size imageSize) {
+        List<Triangle> triangles = new ArrayList<>(createInitialSuperTriangle(imageSize));
         for (Point point : edgePoints) {
-            ArrayList<Triangle> badTriangles = new ArrayList<>();
-            ArrayList<Triangle> goodTriangles = new ArrayList<>();
+            List<Triangle> badTriangles = new ArrayList<>();
+            List<Triangle> goodTriangles = new ArrayList<>();
             for (Triangle triangle : triangles) {
                 if (triangle.getCircumCircle().isInside(point)) {
                     badTriangles.add(triangle);
@@ -124,7 +122,7 @@ public class Delaunay {
                 }
             }
 
-            HashSet<Edge> polygon = new HashSet<>();
+            Set<Edge> polygon = new HashSet<>();
             for (Triangle triangle : badTriangles) {
                 for (Edge edge : triangle.getEdges()) {
                     boolean sharedEdge = false;
@@ -148,7 +146,7 @@ public class Delaunay {
         }
 
         if (arguments.isDeleteBorder()) {
-            ArrayList<Triangle> superTriangle = createInitialSuperTriangle(imageSize);
+            List<Triangle> superTriangle = createInitialSuperTriangle(imageSize);
             triangles.removeIf(triangle -> {
                 for (Triangle st : superTriangle) {
                     for (Edge edge : triangle.getEdges()) {
@@ -164,7 +162,7 @@ public class Delaunay {
         return triangles;
     }
 
-    private void createFinalImage(ArrayList<Triangle> triangles, Mat originalImage) throws IOException {
+    private void createFinalImage(List<Triangle> triangles, Mat originalImage) throws IOException {
         ImageCreator imageCreator = ImgCreatorBuilder.getWriter(arguments, triangles, originalImage);
         imageCreator.createImageFromTriangles();
     }
@@ -183,39 +181,29 @@ public class Delaunay {
         Verbose.printImageLoaded(arguments);
 
         // blur the original image
-        Mat bluredImage = createEmptyImage(originalImage.size(), originalImage.type());
-        Imgproc.GaussianBlur(originalImage, bluredImage, new Size(arguments.getBlurKernelSize(), arguments.getBlurKernelSize()), 0);
+        Mat blurredImage = createEmptyImage(originalImage.size(), originalImage.type());
+        Imgproc.GaussianBlur(originalImage, blurredImage, new Size(arguments.getBlurKernelSize(), arguments.getBlurKernelSize()), 0);
         Verbose.printCreatedBlurImage(arguments);
 
         // create grayscale image from the original
-        Mat grayscaleImage = createEmptyGrayscaleImage(bluredImage.size());
-        Imgproc.cvtColor(bluredImage, grayscaleImage, Imgproc.COLOR_RGB2GRAY);
+        Mat grayscaleImage = createEmptyGrayscaleImage(blurredImage.size());
+        Imgproc.cvtColor(blurredImage, grayscaleImage, Imgproc.COLOR_RGB2GRAY);
         Verbose.printCreatedGrayScaleFromBlur(arguments);
 
         // detect edges
-        Mat detectedEdges = null;
-        switch (arguments.getEdgeDetectionAlgorithm()) {
-            case SOBEL: {
-                detectedEdges = createSobelImage(grayscaleImage);
-                break;
-            }
-            case LAPLACIAN: {
-                detectedEdges = createLaplacianImage(grayscaleImage);
-                break;
-            }
-            default: {
-                throw new DelaunayException("Invalid edgedetection algorithm!");
-            }
-        }
+        Map<EdgeDetectionAlgorithm, Function<Mat, Mat>> enumToFunction = new HashMap<>();
+        enumToFunction.put(EdgeDetectionAlgorithm.SOBEL, this::createSobelImage);
+        enumToFunction.put(EdgeDetectionAlgorithm.LAPLACIAN, this::createLaplacianImage);
+        Mat detectedEdges = enumToFunction.get(arguments.getEdgeDetectionAlgorithm()).apply(grayscaleImage);
         Verbose.printCreatedSobelImage(arguments);
 
         // get edge points from the image
-        ArrayList<Point> edgePoints = getEdgePoints(detectedEdges, arguments.getThreshold(), arguments.getMaxNrOfPoints());
+        List<Point> edgePoints = getEdgePoints(detectedEdges, arguments.getThreshold(), arguments.getMaxNrOfPoints());
         drawEdgePoints(edgePoints, originalImage.size());
         Verbose.printEdgePointsDetected(arguments);
 
         // get triangles form edge points
-        ArrayList<Triangle> triangles = bowyerWatson(edgePoints, originalImage.size());
+        List<Triangle> triangles = bowyerWatson(edgePoints, originalImage.size());
         Verbose.printMeshCreated(arguments);
 
         // create final image

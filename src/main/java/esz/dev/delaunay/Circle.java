@@ -1,31 +1,17 @@
 package esz.dev.delaunay;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.opencv.core.Point;
 
+@Getter
+@RequiredArgsConstructor
 public class Circle {
-
-    private Point center;
-    private double radius;
-
-    public Circle(Point center, double radius) {
-        this.center = center;
-        this.radius = radius;
-    }
-
-    public Point getCenter() {
-        return center;
-    }
-
-    public void setCenter(Point center) {
-        this.center = center;
-    }
+    private final Point center;
+    private final double radius;
 
     public double getRadius() {
         return radius;
-    }
-
-    public void setRadius(int radius) {
-        this.radius = radius;
     }
 
     private double distanceFromCenter(Point point) {

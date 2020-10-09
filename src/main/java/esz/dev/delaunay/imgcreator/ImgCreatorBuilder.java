@@ -8,10 +8,11 @@ import esz.dev.delaunay.imgcreator.fillcolor.GrayFillColor;
 import org.opencv.core.Mat;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ImgCreatorBuilder {
 
-    public static ImageCreator getWriter(Arguments arguments, ArrayList<Triangle>triangles, Mat originalImage) {
+    public static ImageCreator getWriter(Arguments arguments, List<Triangle> triangles, Mat originalImage) {
         FillColorInterface fillColor;
         if (arguments.isGrayscale()) {
             fillColor = new GrayFillColor();

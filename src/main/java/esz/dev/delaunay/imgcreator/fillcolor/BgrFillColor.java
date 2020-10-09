@@ -1,6 +1,9 @@
 package esz.dev.delaunay.imgcreator.fillcolor;
 
-import org.opencv.core.*;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 
 public class BgrFillColor implements FillColorInterface {
 
@@ -17,6 +20,5 @@ public class BgrFillColor implements FillColorInterface {
     public int getImageType() {
         return CV_TYPE;
     }
-
 
 }

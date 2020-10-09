@@ -9,7 +9,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class PixelImageCreator extends ImageCreator {
 
@@ -22,10 +22,10 @@ public class PixelImageCreator extends ImageCreator {
         void draw(Point[] vertices, Scalar pixel);
     }
 
-    private Style style;
+    private final Style style;
 
-    PixelImageCreator(ArrayList<Triangle> triangles, Mat originalImage, FillColorInterface fillColor,
-                             String outputPath, boolean wireFrame) {
+    PixelImageCreator(List<Triangle> triangles, Mat originalImage, FillColorInterface fillColor,
+                      String outputPath, boolean wireFrame) {
         super(triangles, originalImage, fillColor, outputPath, wireFrame);
 
         if (wireFrame) {

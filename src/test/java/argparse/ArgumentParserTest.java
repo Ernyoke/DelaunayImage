@@ -1,8 +1,8 @@
 package argparse;
 
-import esz.dev.argparse.ArgParseException;
 import esz.dev.argparse.ArgumentParser;
 import esz.dev.argparse.Arguments;
+import esz.dev.argparse.EdgeDetectionAlgorithm;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +16,7 @@ public class ArgumentParserTest {
             Arguments arguments = argumentParser.process();
             Assertions.assertEquals(arguments.getInput(), args[0]);
             Assertions.assertEquals(arguments.getOutput(), args[1]);
-        } catch (ArgParseException e) {
+        } catch (IllegalArgumentException e) {
             Assertions.fail("ArgumentParser should not throw exception!");
         }
     }
@@ -25,7 +25,7 @@ public class ArgumentParserTest {
     public void mandatoryArgsMissing() {
         String[] args = {};
         ArgumentParser argumentParser = new ArgumentParser(args);
-        Throwable exception = Assertions.assertThrows(ArgParseException.class, argumentParser::process);
+        Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
         Assertions.assertEquals(exception.getMessage(), "Input and output paths are mandatory arguments!");
     }
 
@@ -33,7 +33,7 @@ public class ArgumentParserTest {
     public void secondMandatoryArgMissing() {
         String[] args = {"in.png"};
         ArgumentParser argumentParser = new ArgumentParser(args);
-        Throwable exception = Assertions.assertThrows(ArgParseException.class, argumentParser::process);
+        Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
         Assertions.assertEquals(exception.getMessage(), "Input and output paths are mandatory arguments!");
     }
 
@@ -45,7 +45,7 @@ public class ArgumentParserTest {
             Arguments arguments = argumentParser.process();
             Assertions.assertNotNull(arguments);
             Assertions.assertEquals(arguments.getThreshold(), 100);
-        } catch (ArgParseException e) {
+        } catch (IllegalArgumentException e) {
             Assertions.fail("ArgumentParser should not throw exception!");
         }
     }
@@ -54,7 +54,7 @@ public class ArgumentParserTest {
     public void invalidThreshold() {
         String[] args = {"in.png", "out.png", "-t", "300"};
         ArgumentParser argumentParser = new ArgumentParser(args);
-        Throwable exception = Assertions.assertThrows(ArgParseException.class, argumentParser::process);
+        Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
         Assertions.assertEquals(exception.getMessage(), "Threshold must be between 0 and 255!");
     }
 
@@ -62,7 +62,7 @@ public class ArgumentParserTest {
     public void thresholdMissing() {
         String[] args = {"in.png", "out.png", "-t"};
         ArgumentParser argumentParser = new ArgumentParser(args);
-        Throwable exception = Assertions.assertThrows(ArgParseException.class, argumentParser::process);
+        Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
         Assertions.assertEquals(exception.getMessage(), "No argument is present after -t!");
     }
 
@@ -74,7 +74,7 @@ public class ArgumentParserTest {
             Arguments arguments = argumentParser.process();
             Assertions.assertNotNull(arguments);
             Assertions.assertEquals(arguments.getBlurKernelSize(), 35);
-        } catch (ArgParseException e) {
+        } catch (IllegalArgumentException e) {
             Assertions.fail("ArgumentParser should not throw exception!");
         }
     }
@@ -83,7 +83,7 @@ public class ArgumentParserTest {
     public void invalidBlurKernelSize() {
         String[] args = {"in.png", "out.png", "-bk", "40"};
         ArgumentParser argumentParser = new ArgumentParser(args);
-        Throwable exception = Assertions.assertThrows(ArgParseException.class, argumentParser::process);
+        Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
         Assertions.assertEquals(exception.getMessage(), "Blur kernel size must be and odd number!");
     }
 
@@ -91,7 +91,7 @@ public class ArgumentParserTest {
     public void negativedBlurKernelSize() {
         String[] args = {"in.png", "out.png", "-bk", "-40"};
         ArgumentParser argumentParser = new ArgumentParser(args);
-        Throwable exception = Assertions.assertThrows(ArgParseException.class, argumentParser::process);
+        Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
         Assertions.assertEquals(exception.getMessage(), "Blur kernel size must pe positive!");
     }
 
@@ -99,7 +99,7 @@ public class ArgumentParserTest {
     public void blurKernelSizeValueMissing() {
         String[] args = {"in.png", "out.png", "-bk"};
         ArgumentParser argumentParser = new ArgumentParser(args);
-        Throwable exception = Assertions.assertThrows(ArgParseException.class, argumentParser::process);
+        Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
         Assertions.assertEquals(exception.getMessage(), "No argument is present after -bk!");
     }
 
@@ -110,8 +110,8 @@ public class ArgumentParserTest {
         try {
             Arguments arguments = argumentParser.process();
             Assertions.assertNotNull(arguments);
-            Assertions.assertEquals(arguments.getEdgeDetectionAlgorithm(), "laplacian");
-        } catch (ArgParseException e) {
+            Assertions.assertEquals(arguments.getEdgeDetectionAlgorithm(), EdgeDetectionAlgorithm.LAPLACIAN);
+        } catch (IllegalArgumentException e) {
             Assertions.fail("ArgumentParser should not throw exception!");
         }
     }
@@ -120,7 +120,7 @@ public class ArgumentParserTest {
     public void invalidEdgeDetectionAlgorithm() {
         String[] args= {"in.png", "out.png", "-ea", "asd"};
         ArgumentParser argumentParser = new ArgumentParser(args);
-        Throwable exception = Assertions.assertThrows(ArgParseException.class, argumentParser::process);
+        Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
         Assertions.assertEquals(exception.getMessage(), "Invalid edge detection algorithm! Allowed values are: sobel, laplacian");
     }
 
@@ -128,7 +128,7 @@ public class ArgumentParserTest {
     public void edgeDetectionAlgorithmMissing() {
         String[] args= {"in.png", "out.png", "-ea"};
         ArgumentParser argumentParser = new ArgumentParser(args);
-        Throwable exception = Assertions.assertThrows(ArgParseException.class, argumentParser::process);
+        Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
         Assertions.assertEquals(exception.getMessage(), "No argument is present after -ea!");
     }
 
@@ -140,7 +140,7 @@ public class ArgumentParserTest {
             Arguments arguments = argumentParser.process();
             Assertions.assertNotNull(arguments);
             Assertions.assertEquals(arguments.getSobelKernelSize(), 3);
-        } catch (ArgParseException e) {
+        } catch (IllegalArgumentException e) {
             Assertions.fail("ArgumentParser should not throw exception!");
         }
     }
@@ -149,7 +149,7 @@ public class ArgumentParserTest {
     public void invalidSobelKernelSize() {
         String[] args = {"in.png", "out.png", "-sk", "15"};
         ArgumentParser argumentParser = new ArgumentParser(args);
-        Throwable exception = Assertions.assertThrows(ArgParseException.class, argumentParser::process);
+        Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
         Assertions.assertEquals(exception.getMessage(), "Accepted sobel kernel sizes are 1, 3, 5, 7!");
     }
 
@@ -157,7 +157,7 @@ public class ArgumentParserTest {
     public void sobelKernelSizeValueMissing() {
         String[] args = {"in.png", "out.png", "-sk"};
         ArgumentParser argumentParser = new ArgumentParser(args);
-        Throwable exception = Assertions.assertThrows(ArgParseException.class, argumentParser::process);
+        Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
         Assertions.assertEquals(exception.getMessage(), "No argument is present after -sk!");
     }
 
@@ -170,7 +170,7 @@ public class ArgumentParserTest {
             Assertions.assertNotNull(arguments);
             Assertions.assertTrue(arguments.isShowEdgePoints());
             Assertions.assertEquals(arguments.getOutputEdgePoints(), "res/edge.png");
-        } catch (ArgParseException e) {
+        } catch (IllegalArgumentException e) {
             Assertions.fail("ArgumentParser should not throw exception!");
         }
     }
@@ -179,7 +179,7 @@ public class ArgumentParserTest {
     public void edgePointsPathMissing() {
         String[] args = {"in.png", "out.png", "-ep"};
         ArgumentParser argumentParser = new ArgumentParser(args);
-        Throwable exception = Assertions.assertThrows(ArgParseException.class, argumentParser::process);
+        Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
         Assertions.assertEquals(exception.getMessage(), "No argument is present after -ep!");
     }
 
@@ -191,7 +191,7 @@ public class ArgumentParserTest {
             Arguments arguments = argumentParser.process();
             Assertions.assertNotNull(arguments);
             Assertions.assertTrue(arguments.isVerbose());
-        } catch (ArgParseException e) {
+        } catch (IllegalArgumentException e) {
             Assertions.fail("ArgumentParser should not throw exception!");
         }
     }
@@ -204,7 +204,7 @@ public class ArgumentParserTest {
             Arguments arguments = argumentParser.process();
             Assertions.assertNotNull(arguments);
             Assertions.assertTrue(arguments.isGrayscale());
-        } catch (ArgParseException e) {
+        } catch (IllegalArgumentException e) {
             Assertions.fail("ArgumentParser should not throw exception!");
         }
     }
@@ -217,7 +217,7 @@ public class ArgumentParserTest {
             Arguments arguments = argumentParser.process();
             Assertions.assertNotNull(arguments);
             Assertions.assertTrue(arguments.isWireFrame());
-        } catch (ArgParseException e) {
+        } catch (IllegalArgumentException e) {
             Assertions.fail("ArgumentParser should not throw exception!");
         }
     }
@@ -230,7 +230,7 @@ public class ArgumentParserTest {
             Arguments arguments = argumentParser.process();
             Assertions.assertNotNull(arguments);
             Assertions.assertTrue(arguments.isDeleteBorder());
-        } catch (ArgParseException e) {
+        } catch (IllegalArgumentException e) {
             Assertions.fail("ArgumentParser should not throw exception!");
         }
     }

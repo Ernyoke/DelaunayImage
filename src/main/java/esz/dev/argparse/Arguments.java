@@ -1,131 +1,50 @@
 package esz.dev.argparse;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Builder
+@Getter
+@RequiredArgsConstructor
 public class Arguments {
 
-    private String input = "";
-    private String output = "";
-    private int blurKernelSize = 35;
-    private boolean verbose = false;
-    private int threshold = 150;
-    private EdgeDetectionAlgorithm edgeDetectionAlgorithm = EdgeDetectionAlgorithm.SOBEL;
-    private int sobelKernelSize = 3;
-    private int maxNrOfPoints = 1000;
-    private boolean grayscale = false;
-    private boolean deleteBorder = false;
-    private boolean showEdgePoints = false;
-    private String outputEdgePoints = "";
-    private boolean wireFrame = false;
-    private int thickness = 1;
+    private final String input;
+    private final String output;
 
-    public String getInput() {
-        return input;
-    }
+    @Builder.Default
+    private final int blurKernelSize = 35;
 
-    public void setInput(String input) {
-        this.input = input;
-    }
+    @Builder.Default
+    private final boolean verbose = false;
 
-    public String getOutput() {
-        return output;
-    }
+    @Builder.Default
+    private final int threshold = 150;
 
-    public void setOutput(String output) {
-        this.output = output;
-    }
+    @Builder.Default
+    private final EdgeDetectionAlgorithm edgeDetectionAlgorithm = EdgeDetectionAlgorithm.SOBEL;
 
-    public int getBlurKernelSize() {
-        return blurKernelSize;
-    }
+    @Builder.Default
+    private final int sobelKernelSize = 3;
 
-    public void setBlurKernelSize(int blurKernelSize) {
-        this.blurKernelSize = blurKernelSize;
-    }
+    @Builder.Default
+    private final int maxNrOfPoints = 1000;
 
-    public boolean isVerbose() {
-        return verbose;
-    }
+    @Builder.Default
+    private final boolean grayscale = false;
 
-    public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
-    }
+    @Builder.Default
+    private final boolean deleteBorder = false;
 
-    public int getThreshold() {
-        return threshold;
-    }
+    @Builder.Default
+    private final boolean showEdgePoints = false;
 
-    public void setThreshold(int treshold) {
-        this.threshold = treshold;
-    }
+    @Builder.Default
+    private final String outputEdgePoints = "";
 
-    public EdgeDetectionAlgorithm getEdgeDetectionAlgorithm() {
-        return edgeDetectionAlgorithm;
-    }
+    @Builder.Default
+    private final boolean wireFrame = false;
 
-    public void setEdgeDetectionAlgorithm(EdgeDetectionAlgorithm edgeDetectionAlgorithm) {
-        this.edgeDetectionAlgorithm = edgeDetectionAlgorithm;
-    }
-
-    public int getMaxNrOfPoints() {
-        return maxNrOfPoints;
-    }
-
-    public int getSobelKernelSize() {
-        return sobelKernelSize;
-    }
-
-    public void setSobelKernelSize(int sobelTreshold) {
-        this.sobelKernelSize = sobelTreshold;
-    }
-
-    public void setMaxNrOfPoints(int maxNrOfPoints) {
-        this.maxNrOfPoints = maxNrOfPoints;
-    }
-
-    public boolean isGrayscale() {
-        return grayscale;
-    }
-
-    public void setGrayscale(boolean grayscale) {
-        this.grayscale = grayscale;
-    }
-
-    public boolean isDeleteBorder() {
-        return deleteBorder;
-    }
-
-    public void setDeleteBorder(boolean deleteSuperTriangle) {
-        this.deleteBorder = deleteSuperTriangle;
-    }
-
-    public boolean isShowEdgePoints() {
-        return showEdgePoints;
-    }
-
-    public void setShowEdgePoints(boolean showEdgePoints) {
-        this.showEdgePoints = showEdgePoints;
-    }
-
-    public String getOutputEdgePoints() {
-        return outputEdgePoints;
-    }
-
-    public void setOutputEdgePoints(String outputEdgePoints) {
-        this.outputEdgePoints = outputEdgePoints;
-    }
-
-    public boolean isWireFrame() {
-        return wireFrame;
-    }
-
-    public void setWireFrame(boolean wireFrame) {
-        this.wireFrame = wireFrame;
-    }
-
-    public int getThickness() {
-        return thickness;
-    }
-
-    public void setThickness(int thickness) {
-        this.thickness = thickness;
-    }
+    @Builder.Default
+    private final int thickness = 1;
 }

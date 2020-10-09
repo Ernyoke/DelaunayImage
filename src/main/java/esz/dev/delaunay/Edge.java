@@ -1,26 +1,17 @@
 package esz.dev.delaunay;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.opencv.core.Point;
 
+@Getter
+@RequiredArgsConstructor
 public class Edge {
 
-    private Point a;
-    private Point b;
+    private final Point a;
+    private final Point b;
 
     private static final double d = 0.01;
-
-    public Edge(Point a, Point b) {
-        this.a = a;
-        this.b = b;
-    }
-
-    public Point getA() {
-        return a;
-    }
-
-    public Point getB() {
-        return b;
-    }
 
     public double getLength() {
         return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
