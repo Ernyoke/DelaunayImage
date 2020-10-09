@@ -10,32 +10,28 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 
 public class PixelImageCreator extends ImageCreator {
 
     private Mat image;
 
-    private int thickness = 1;
+    private static final int THICKNESS = 1;
 
-    @FunctionalInterface
-    private interface Style {
-        void draw(Point[] vertices, Scalar pixel);
-    }
-
-    private final Style style;
+    private final BiConsumer<Point[], Scalar> drawFunction;
 
     PixelImageCreator(List<Triangle> triangles, Mat originalImage, FillColorInterface fillColor,
                       String outputPath, boolean wireFrame) {
-        super(triangles, originalImage, fillColor, outputPath, wireFrame);
+        super(triangles, originalImage, outputPath, wireFrame, fillColor);
 
         if (wireFrame) {
-            style = (Point[] vertices, Scalar pixel) -> {
-                Imgproc.line(image, vertices[0], vertices[1], pixel, thickness);
-                Imgproc.line(image, vertices[1], vertices[2], pixel, thickness);
-                Imgproc.line(image, vertices[2], vertices[0], pixel, thickness);
+            drawFunction = (Point[] vertices, Scalar pixel) -> {
+                Imgproc.line(image, vertices[0], vertices[1], pixel, THICKNESS);
+                Imgproc.line(image, vertices[1], vertices[2], pixel, THICKNESS);
+                Imgproc.line(image, vertices[2], vertices[0], pixel, THICKNESS);
             };
         } else {
-            style = (Point[] vertices, Scalar pixel) -> {
+            drawFunction = (Point[] vertices, Scalar pixel) -> {
                 MatOfPoint matOfPoint = new MatOfPoint();
                 matOfPoint.fromArray(vertices);
                 Imgproc.fillConvexPoly(image, matOfPoint, pixel, 8, 0);
@@ -47,7 +43,7 @@ public class PixelImageCreator extends ImageCreator {
 
     @Override
     public void createTriangle(Point[] vertices) {
-        style.draw(vertices, fillColor.getFillColor(originalImage, vertices));
+        drawFunction.accept(vertices, fillColor.getFillColor(originalImage, vertices));
     }
 
     @Override

@@ -2,7 +2,6 @@ package esz.dev;
 
 import esz.dev.argparse.ArgumentParser;
 import esz.dev.delaunay.Delaunay;
-import esz.dev.delaunay.DelaunayException;
 
 import java.io.IOException;
 
@@ -20,7 +19,7 @@ public class Main {
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
             ArgumentParser.showHelp();
-        } catch (DelaunayException | IOException e) {
+        } catch (IOException e) {
             System.out.println("Error: " + e.getMessage());
         }
     }

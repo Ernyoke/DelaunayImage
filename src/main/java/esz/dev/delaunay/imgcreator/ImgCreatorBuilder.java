@@ -7,18 +7,12 @@ import esz.dev.delaunay.imgcreator.fillcolor.FillColorInterface;
 import esz.dev.delaunay.imgcreator.fillcolor.GrayFillColor;
 import org.opencv.core.Mat;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ImgCreatorBuilder {
 
     public static ImageCreator getWriter(Arguments arguments, List<Triangle> triangles, Mat originalImage) {
-        FillColorInterface fillColor;
-        if (arguments.isGrayscale()) {
-            fillColor = new GrayFillColor();
-        } else {
-            fillColor = new BgrFillColor();
-        }
+        FillColorInterface fillColor = arguments.isGrayscale() ? new GrayFillColor() : new BgrFillColor();
 
         ImageCreator imageCreator;
         if (arguments.getOutput().endsWith(".svg") || arguments.getOutput().endsWith(".eps")) {

@@ -2,27 +2,21 @@ package esz.dev.delaunay.imgcreator;
 
 import esz.dev.delaunay.Triangle;
 import esz.dev.delaunay.imgcreator.fillcolor.FillColorInterface;
+import lombok.RequiredArgsConstructor;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 
 import java.io.IOException;
 import java.util.List;
 
+@RequiredArgsConstructor
 public abstract class ImageCreator {
-    protected Mat originalImage;
-    protected List<Triangle> triangles;
-    protected String outputPath;
-    protected boolean wireFrame;
+    protected final List<Triangle> triangles;
+    protected final Mat originalImage;
+    protected final String outputPath;
+    protected final boolean wireFrame;
 
-    protected FillColorInterface fillColor;
-
-    ImageCreator(List<Triangle> triangles, Mat originalImage, FillColorInterface fillColor, String outputPath, boolean wireFrame) {
-        this.originalImage = originalImage;
-        this.triangles = triangles;
-        this.fillColor = fillColor;
-        this.outputPath = outputPath;
-        this.wireFrame = wireFrame;
-    }
+    protected final FillColorInterface fillColor;
 
     public void createImageFromTriangles() throws IOException {
         triangles.forEach(triangle -> {

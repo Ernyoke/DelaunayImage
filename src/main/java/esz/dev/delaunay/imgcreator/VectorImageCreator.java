@@ -29,7 +29,7 @@ public class VectorImageCreator extends ImageCreator {
 
     VectorImageCreator(List<Triangle> triangles, Mat originalImage, FillColorInterface fillColor,
                        String outputPath, boolean wireFrame) {
-        super(triangles, originalImage, fillColor, outputPath, wireFrame);
+        super(triangles, originalImage, outputPath, wireFrame, fillColor);
 
         if (wireFrame) {
             drawFunction = (int[] xVec, int[] yVec) -> vg2d.fillPolygon(xVec, yVec, 3);

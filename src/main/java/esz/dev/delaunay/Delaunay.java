@@ -167,16 +167,16 @@ public class Delaunay {
         imageCreator.createImageFromTriangles();
     }
 
-    public void generate() throws DelaunayException, IOException {
+    public void generate() throws IOException {
         if (arguments == null) {
-            throw new DelaunayException("No arguments were set!");
+            throw new IllegalArgumentException("No arguments were set!");
         }
 
         Verbose.printStart(arguments);
 
         Mat originalImage = Imgcodecs.imread(arguments.getInput(), Imgcodecs.IMREAD_COLOR);
         if (originalImage.empty()) {
-            throw new DelaunayException("Input image could not be loaded from location: " + arguments.getInput());
+            throw new IOException("Input image could not be loaded from location: " + arguments.getInput());
         }
         Verbose.printImageLoaded(arguments);
 
