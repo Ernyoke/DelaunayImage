@@ -1,13 +1,28 @@
 package esz.dev.argparse;
 
-import java.util.Arrays;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class ArgumentParser {
-
-    private final String[] args;
+    private final Queue<String> argStack = new ArrayDeque<>();
+    Arguments.ArgumentsBuilder builder = Arguments.builder();
+    Map<String, Consumer<String>> dispatchToArgumentHandler = new HashMap<>();
 
     public ArgumentParser(String[] args) {
-        this.args = args;
+        for (String arg : args) {
+            argStack.offer(arg);
+        }
+
+        dispatchToArgumentHandler.put("-bk", this::setBlurKernelSize);
+        dispatchToArgumentHandler.put("-v", this::setVerboseFlag);
+        dispatchToArgumentHandler.put("-t", this::setThreshold);
+        dispatchToArgumentHandler.put("-max", this::setMaxNumberOfPoints);
+        dispatchToArgumentHandler.put("-ea", this::setEdgeDetectionAlgorithm);
+        dispatchToArgumentHandler.put("-sk", this::setSobelKernelSize);
+        dispatchToArgumentHandler.put("-grayscale", this::setGrayscaleImageFlag);
+        dispatchToArgumentHandler.put("-ep", this::setOutputEdgePointsPathAndFlag);
+        dispatchToArgumentHandler.put("-wire", this::setWireFrameFlag);
+        dispatchToArgumentHandler.put("-dbf", this::setDeleteBorderFlag);
     }
 
     private int parseInt(String argToPParse, String prevArg) {
@@ -22,115 +37,99 @@ public class ArgumentParser {
     }
 
     public Arguments process() {
-        Arguments.ArgumentsBuilder builder = Arguments.builder();
-
         // Mandatory arguments
-        if (args.length < 2) {
+        if (argStack.size() < 2) {
             throw new IllegalArgumentException("Input and output paths are mandatory arguments!");
         } else {
-            builder.input(args[0]);
-            builder.output(args[1]);
+            builder.input(argStack.poll());
+            builder.output(argStack.poll());
         }
 
-        for (int i = 0; i < args.length; ++i) {
-            String arg = args[i];
-            switch (arg) {
-                case "-bk": {
-                    ++i;
-                    if (i < args.length) {
-                        int kernelSize = parseInt(args[i], arg);
-                        if (kernelSize < 0) {
-                            throw new IllegalArgumentException("Blur kernel size must pe positive!");
-                        }
-                        if (kernelSize % 2 == 0) {
-                            throw new IllegalArgumentException("Blur kernel size must be and odd number!");
-                        }
-                        builder.blurKernelSize(kernelSize);
-                    } else {
-                        throw new IllegalArgumentException("No argument is present after -bk!");
-                    }
-                    break;
-                }
-                case "-v": {
-                    builder.verbose(true);
-                    break;
-                }
-                case "-t": {
-                    ++i;
-                    if (i < args.length) {
-                        int threshold = parseInt(args[i], arg);
-                        if (threshold < 0 || threshold > 255) {
-                            throw new IllegalArgumentException("Threshold must be between 0 and 255!");
-                        }
-                        builder.threshold(threshold);
-                    } else {
-                        throw new IllegalArgumentException("No argument is present after -t!");
-                    }
-                    break;
-                }
-                case "-max": {
-                    ++i;
-                    if (i < args.length) {
-                        int maxNrOfPoints = parseInt(args[i], arg);
-                        if (maxNrOfPoints < 0) {
-                            throw new IllegalArgumentException("Number of max edge points must be a positive number!");
-                        }
-                        builder.maxNrOfPoints(maxNrOfPoints);
-                    } else {
-                        throw new IllegalArgumentException("No argument is present after -max!");
-                    }
-                    break;
-                }
-                case "-ea": {
-                    ++i;
-                    if (i < args.length) {
-                        String algorithm = args[i];
-                        builder.edgeDetectionAlgorithm(EdgeDetectionAlgorithm.fromString(algorithm).orElseThrow(() ->
-                                new IllegalArgumentException("Invalid edge detection algorithm! Allowed values are: sobel, laplacian")));
-                    } else {
-                        throw new IllegalArgumentException("No argument is present after -ea!");
-                    }
-                    break;
-                }
-                case "-sk": {
-                    ++i;
-                    if (i < args.length) {
-                        final int[] acceptedKernels = {1, 3, 5, 7};
-                        int kernelSize = parseInt(args[i], arg);
-                        if (Arrays.stream(acceptedKernels).anyMatch(size -> size == kernelSize)) {
-                            builder.sobelKernelSize(kernelSize);
-                        } else {
-                            throw new IllegalArgumentException("Accepted sobel kernel sizes are 1, 3, 5, 7!");
-                        }
-                    } else {
-                        throw new IllegalArgumentException("No argument is present after -sk!");
-                    }
-                    break;
-                }
-                case "-grayscale": {
-                    builder.grayscale(true);
-                    break;
-                }
-                case "-ep": {
-                    ++i;
-                    if (i < args.length) {
-                        builder.showEdgePoints(true);
-                        builder.outputEdgePoints(args[i]);
-                    } else {
-                        throw new IllegalArgumentException("No argument is present after -ep!");
-                    }
-                }
-                case "-wire": {
-                    builder.wireFrame(true);
-                    break;
-                }
-                case "-dbf": {
-                    builder.deleteBorder(true);
-                }
-            }
+        while (!argStack.isEmpty()) {
+            String currentArgument = argStack.poll();
+            dispatchToArgumentHandler
+                    .getOrDefault(currentArgument, unused -> {
+                        throw new IllegalArgumentException("Illegal argument found!");
+                    })
+                    .accept(currentArgument);
         }
 
         return builder.build();
+    }
+
+    private void setBlurKernelSize(String argument) {
+        checkNextArgumentsExistence(1, "No argument is present after " + argument + "!");
+        int kernelSize = parseInt(argStack.poll(), argument);
+        if (kernelSize < 0) {
+            throw new IllegalArgumentException("Blur kernel size must pe positive!");
+        }
+        if (kernelSize % 2 == 0) {
+            throw new IllegalArgumentException("Blur kernel size must be and odd number!");
+        }
+        builder.blurKernelSize(kernelSize);
+    }
+
+    private void setVerboseFlag(String argument) {
+        builder.verbose(true);
+    }
+
+    private void setThreshold(String argument) {
+        checkNextArgumentsExistence(1, "No argument is present after " + argument + "!");
+        int threshold = parseInt(argStack.poll(), argument);
+        if (threshold < 0 || threshold > 255) {
+            throw new IllegalArgumentException("Threshold must be between 0 and 255!");
+        }
+        builder.threshold(threshold);
+    }
+
+    private void setMaxNumberOfPoints(String argument) {
+        checkNextArgumentsExistence(1, "No argument is present after " + argument + "!");
+        int maxNrOfPoints = parseInt(argStack.poll(), argument);
+        if (maxNrOfPoints < 0) {
+            throw new IllegalArgumentException("Number of max edge points must be a positive number!");
+        }
+        builder.maxNrOfPoints(maxNrOfPoints);
+    }
+
+    private void setEdgeDetectionAlgorithm(String argument) {
+        checkNextArgumentsExistence(1, "No argument is present after " + argument + "!");
+        builder.edgeDetectionAlgorithm(EdgeDetectionAlgorithm.fromString(argStack.poll()).orElseThrow(() ->
+                new IllegalArgumentException("Invalid edge detection algorithm! Allowed values are: sobel, laplacian")));
+    }
+
+    private void setSobelKernelSize(String argument) {
+        checkNextArgumentsExistence(1, "No argument is present after " + argument + "!");
+        final int[] acceptedKernels = {1, 3, 5, 7};
+        final int kernelSize = parseInt(argStack.poll(), argument);
+        if (Arrays.stream(acceptedKernels).anyMatch(size -> size == kernelSize)) {
+            builder.sobelKernelSize(kernelSize);
+        } else {
+            throw new IllegalArgumentException("Accepted sobel kernel sizes are 1, 3, 5, 7!");
+        }
+    }
+
+    private void setGrayscaleImageFlag(String argument) {
+        builder.grayscale(true);
+    }
+
+    private void setOutputEdgePointsPathAndFlag(String argument) {
+        checkNextArgumentsExistence(1, "No argument is present after " + argument + "!");
+        builder.showEdgePoints(true);
+        builder.outputEdgePoints(argStack.poll());
+    }
+
+    private void setWireFrameFlag(String argument) {
+        builder.wireFrame(true);
+    }
+
+    private void setDeleteBorderFlag(String argument) {
+        builder.deleteBorder(true);
+    }
+
+    private void checkNextArgumentsExistence(int numberOfArguments, String errorMessage) {
+        if (argStack.size() < numberOfArguments) {
+            throw new IllegalArgumentException(errorMessage);
+        }
     }
 
     public static void showHelp() {

@@ -26,7 +26,7 @@ public class ArgumentParserTest {
         String[] args = {};
         ArgumentParser argumentParser = new ArgumentParser(args);
         Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
-        Assertions.assertEquals(exception.getMessage(), "Input and output paths are mandatory arguments!");
+        Assertions.assertEquals("Input and output paths are mandatory arguments!", exception.getMessage());
     }
 
     @Test
@@ -34,7 +34,7 @@ public class ArgumentParserTest {
         String[] args = {"in.png"};
         ArgumentParser argumentParser = new ArgumentParser(args);
         Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
-        Assertions.assertEquals(exception.getMessage(), "Input and output paths are mandatory arguments!");
+        Assertions.assertEquals("Input and output paths are mandatory arguments!", exception.getMessage());
     }
 
     @Test
@@ -55,7 +55,7 @@ public class ArgumentParserTest {
         String[] args = {"in.png", "out.png", "-t", "300"};
         ArgumentParser argumentParser = new ArgumentParser(args);
         Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
-        Assertions.assertEquals(exception.getMessage(), "Threshold must be between 0 and 255!");
+        Assertions.assertEquals("Threshold must be between 0 and 255!", exception.getMessage());
     }
 
     @Test
@@ -63,7 +63,7 @@ public class ArgumentParserTest {
         String[] args = {"in.png", "out.png", "-t"};
         ArgumentParser argumentParser = new ArgumentParser(args);
         Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
-        Assertions.assertEquals(exception.getMessage(), "No argument is present after -t!");
+        Assertions.assertEquals("No argument is present after -t!", exception.getMessage());
     }
 
     @Test
@@ -73,7 +73,7 @@ public class ArgumentParserTest {
         try {
             Arguments arguments = argumentParser.process();
             Assertions.assertNotNull(arguments);
-            Assertions.assertEquals(arguments.getBlurKernelSize(), 35);
+            Assertions.assertEquals(35, arguments.getBlurKernelSize());
         } catch (IllegalArgumentException e) {
             Assertions.fail("ArgumentParser should not throw exception!");
         }
@@ -84,7 +84,7 @@ public class ArgumentParserTest {
         String[] args = {"in.png", "out.png", "-bk", "40"};
         ArgumentParser argumentParser = new ArgumentParser(args);
         Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
-        Assertions.assertEquals(exception.getMessage(), "Blur kernel size must be and odd number!");
+        Assertions.assertEquals("Blur kernel size must be and odd number!", exception.getMessage());
     }
 
     @Test
@@ -92,7 +92,7 @@ public class ArgumentParserTest {
         String[] args = {"in.png", "out.png", "-bk", "-40"};
         ArgumentParser argumentParser = new ArgumentParser(args);
         Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
-        Assertions.assertEquals(exception.getMessage(), "Blur kernel size must pe positive!");
+        Assertions.assertEquals("Blur kernel size must pe positive!", exception.getMessage());
     }
 
     @Test
@@ -100,7 +100,7 @@ public class ArgumentParserTest {
         String[] args = {"in.png", "out.png", "-bk"};
         ArgumentParser argumentParser = new ArgumentParser(args);
         Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
-        Assertions.assertEquals(exception.getMessage(), "No argument is present after -bk!");
+        Assertions.assertEquals("No argument is present after -bk!", exception.getMessage());
     }
 
     @Test
@@ -121,7 +121,7 @@ public class ArgumentParserTest {
         String[] args= {"in.png", "out.png", "-ea", "asd"};
         ArgumentParser argumentParser = new ArgumentParser(args);
         Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
-        Assertions.assertEquals(exception.getMessage(), "Invalid edge detection algorithm! Allowed values are: sobel, laplacian");
+        Assertions.assertEquals("Invalid edge detection algorithm! Allowed values are: sobel, laplacian", exception.getMessage());
     }
 
     @Test
@@ -129,7 +129,7 @@ public class ArgumentParserTest {
         String[] args= {"in.png", "out.png", "-ea"};
         ArgumentParser argumentParser = new ArgumentParser(args);
         Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
-        Assertions.assertEquals(exception.getMessage(), "No argument is present after -ea!");
+        Assertions.assertEquals("No argument is present after -ea!", exception.getMessage());
     }
 
     @Test
@@ -150,7 +150,7 @@ public class ArgumentParserTest {
         String[] args = {"in.png", "out.png", "-sk", "15"};
         ArgumentParser argumentParser = new ArgumentParser(args);
         Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
-        Assertions.assertEquals(exception.getMessage(), "Accepted sobel kernel sizes are 1, 3, 5, 7!");
+        Assertions.assertEquals("Accepted sobel kernel sizes are 1, 3, 5, 7!", exception.getMessage());
     }
 
     @Test
@@ -158,7 +158,7 @@ public class ArgumentParserTest {
         String[] args = {"in.png", "out.png", "-sk"};
         ArgumentParser argumentParser = new ArgumentParser(args);
         Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
-        Assertions.assertEquals(exception.getMessage(), "No argument is present after -sk!");
+        Assertions.assertEquals("No argument is present after -sk!", exception.getMessage());
     }
 
     @Test
@@ -180,7 +180,7 @@ public class ArgumentParserTest {
         String[] args = {"in.png", "out.png", "-ep"};
         ArgumentParser argumentParser = new ArgumentParser(args);
         Throwable exception = Assertions.assertThrows(IllegalArgumentException.class, argumentParser::process);
-        Assertions.assertEquals(exception.getMessage(), "No argument is present after -ep!");
+        Assertions.assertEquals("No argument is present after -ep!", exception.getMessage());
     }
 
     @Test
