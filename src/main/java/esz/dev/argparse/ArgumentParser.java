@@ -5,8 +5,8 @@ import java.util.function.Consumer;
 
 public class ArgumentParser {
     private final Queue<String> argStack = new ArrayDeque<>();
-    Arguments.ArgumentsBuilder builder = Arguments.builder();
-    Map<String, Consumer<String>> dispatchToArgumentHandler = new HashMap<>();
+    private final Arguments.ArgumentsBuilder builder = Arguments.builder();
+    private final Map<String, Consumer<String>> dispatchToArgumentHandler = new HashMap<>();
 
     public ArgumentParser(String[] args) {
         for (String arg : args) {
@@ -20,7 +20,7 @@ public class ArgumentParser {
         dispatchToArgumentHandler.put("-ea", this::setEdgeDetectionAlgorithm);
         dispatchToArgumentHandler.put("-sk", this::setSobelKernelSize);
         dispatchToArgumentHandler.put("-grayscale", this::setGrayscaleImageFlag);
-        dispatchToArgumentHandler.put("-ep", this::setOutputEdgePointsPathAndFlag);
+        dispatchToArgumentHandler.put("-vx", this::setOutputVerticesFlag);
         dispatchToArgumentHandler.put("-wire", this::setWireFrameFlag);
         dispatchToArgumentHandler.put("-dbf", this::setDeleteBorderFlag);
     }
@@ -112,10 +112,10 @@ public class ArgumentParser {
         builder.grayscale(true);
     }
 
-    private void setOutputEdgePointsPathAndFlag(String argument) {
+    private void setOutputVerticesFlag(String argument) {
         checkNextArgumentsExistence(1, "No argument is present after " + argument + "!");
-        builder.showEdgePoints(true);
-        builder.outputEdgePoints(argStack.poll());
+        builder.showVertices(true);
+        builder.verticesPath(argStack.poll());
     }
 
     private void setWireFrameFlag(String argument) {

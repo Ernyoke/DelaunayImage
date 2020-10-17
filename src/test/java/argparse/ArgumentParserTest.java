@@ -162,14 +162,14 @@ public class ArgumentParserTest {
     }
 
     @Test
-    public void validEdgePointArguments() {
-        String[] args = {"in.png", "out.png", "-ep", "res/edge.png"};
+    public void validOutputVerticesArguments() {
+        String[] args = {"in.png", "out.png", "-vx", "res/edge.png"};
         ArgumentParser argumentParser = new ArgumentParser(args);
         try {
             Arguments arguments = argumentParser.process();
             Assertions.assertNotNull(arguments);
-            Assertions.assertTrue(arguments.isShowEdgePoints());
-            Assertions.assertEquals(arguments.getOutputEdgePoints(), "res/edge.png");
+            Assertions.assertTrue(arguments.isShowVertices());
+            Assertions.assertEquals(arguments.getVerticesPath(), "res/edge.png");
         } catch (IllegalArgumentException e) {
             Assertions.fail("ArgumentParser should not throw exception!");
         }

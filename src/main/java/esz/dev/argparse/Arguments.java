@@ -37,10 +37,10 @@ public class Arguments {
     private final boolean deleteBorder = false;
 
     @Builder.Default
-    private final boolean showEdgePoints = false;
+    private final boolean showVertices = false;
 
     @Builder.Default
-    private final String outputEdgePoints = "";
+    private final String verticesPath = "";
 
     @Builder.Default
     private final boolean wireFrame = false;
