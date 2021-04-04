@@ -11,6 +11,7 @@ import org.opencv.imgproc.Imgproc;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Delaunay {
 
@@ -147,17 +148,13 @@ public class Delaunay {
     // https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm
     private List<Triangle> bowyerWatson(List<Point> edgePoints, Size imageSize) {
         List<Triangle> triangles = new ArrayList<>(createInitialSuperTriangle(imageSize));
-        for (Point point : edgePoints) {
-            final List<Triangle> badTriangles = new ArrayList<>();
-            final List<Triangle> goodTriangles = new ArrayList<>();
-            for (Triangle triangle : triangles) {
-                if (triangle.getCircumCircle().isInside(point)) {
-                    badTriangles.add(triangle);
-                } else {
-                    goodTriangles.add(triangle);
-                }
-            }
 
+        for (Point point : edgePoints) {
+            Map<Boolean, List<Triangle>> partitionedTriangles = triangles.stream()
+                    .collect(Collectors.partitioningBy(triangle -> triangle.getCircumCircle().isInside(point),
+                            Collectors.toCollection(ArrayList<Triangle>::new)));
+
+            List<Triangle> badTriangles = partitionedTriangles.get(true);
             Set<Edge> polygon = new HashSet<>();
             for (Triangle triangle : badTriangles) {
                 for (Edge edge : triangle.getEdges()) {
@@ -174,6 +171,7 @@ public class Delaunay {
                 }
             }
 
+            List<Triangle> goodTriangles = partitionedTriangles.get(false);
             for (Edge edge : polygon) {
                 goodTriangles.add(new Triangle(edge.getA(), edge.getB(), point));
             }
@@ -183,16 +181,17 @@ public class Delaunay {
 
         if (arguments.isDeleteBorder()) {
             List<Triangle> superTriangle = createInitialSuperTriangle(imageSize);
-            triangles.removeIf(triangle -> {
+
+            return triangles.stream().filter(triangle -> {
                 for (Triangle st : superTriangle) {
                     for (Edge edge : triangle.getEdges()) {
                         if (st.containsVertex(edge.getA()) || st.containsVertex(edge.getB())) {
-                            return true;
+                            return false;
                         }
                     }
                 }
-                return false;
-            });
+                return true;
+            }).collect(Collectors.toList());
         }
 
         return triangles;
