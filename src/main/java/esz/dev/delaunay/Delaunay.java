@@ -175,7 +175,7 @@ public class Delaunay {
             }
 
             for (Edge edge : polygon) {
-                goodTriangles.add(new Triangle(edge.getA(), edge.getB(), point));
+                goodTriangles.add(new Triangle(edge.a(), edge.b(), point));
             }
 
             triangles = goodTriangles;
@@ -186,7 +186,7 @@ public class Delaunay {
             triangles.removeIf(triangle -> {
                 for (Triangle st : superTriangle) {
                     for (Edge edge : triangle.getEdges()) {
-                        if (st.containsVertex(edge.getA()) || st.containsVertex(edge.getB())) {
+                        if (st.containsVertex(edge.a()) || st.containsVertex(edge.b())) {
                             return true;
                         }
                     }

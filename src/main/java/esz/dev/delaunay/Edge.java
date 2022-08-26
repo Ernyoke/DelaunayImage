@@ -1,39 +1,31 @@
 package esz.dev.delaunay;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.opencv.core.Point;
 
-@Getter
-@RequiredArgsConstructor
-public class Edge {
+public record Edge(Point a, Point b) {
 
-    private final Point a;
-    private final Point b;
-
-    private static final double d = 0.01;
+    private static final double D = 0.01;
 
     public double getLength() {
         return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
     }
 
     public boolean containsVertex(Point vertex) {
-        return ((Math.abs(this.a.x - vertex.x) < d) && (Math.abs(this.a.y - vertex.y) < d)) ||
-                ((Math.abs(this.b.x - vertex.x) < d) && (Math.abs(this.b.y - vertex.y) < d));
+        return ((Math.abs(this.a.x - vertex.x) < D) && (Math.abs(this.a.y - vertex.y) < D)) ||
+                ((Math.abs(this.b.x - vertex.x) < D) && (Math.abs(this.b.y - vertex.y) < D));
     }
 
     @Override
     public boolean equals(Object other) {
-        if (other instanceof Edge) {
-            Edge otherEdge = (Edge) other;
-            return ((Math.abs(this.a.x - otherEdge.getA().x) < d && Math.abs(this.a.y - otherEdge.getA().y) < d) && (Math.abs(this.b.x - otherEdge.getB().x) < d && Math.abs(this.b.y - otherEdge.getB().y) < d)) ||
-                    ((Math.abs(this.b.x - otherEdge.getA().x) < d && Math.abs(this.b.y - otherEdge.getA().y) < d) && (Math.abs(this.a.x - otherEdge.getB().x) < d && Math.abs(this.a.y - otherEdge.getB().y) < d));
+        if (other instanceof Edge otherEdge) {
+            return ((Math.abs(this.a.x - otherEdge.a().x) < D && Math.abs(this.a.y - otherEdge.a().y) < D) && (Math.abs(this.b.x - otherEdge.b().x) < D && Math.abs(this.b.y - otherEdge.b().y) < D)) ||
+                    ((Math.abs(this.b.x - otherEdge.a().x) < D && Math.abs(this.b.y - otherEdge.a().y) < D) && (Math.abs(this.a.x - otherEdge.b().x) < D && Math.abs(this.a.y - otherEdge.b().y) < D));
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return 31 * (int)(a.x + a.y + b.x + b.y);
+        return 31 * (int) (a.x + a.y + b.x + b.y);
     }
 }

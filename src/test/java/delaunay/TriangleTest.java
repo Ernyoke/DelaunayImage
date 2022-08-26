@@ -16,7 +16,7 @@ public class TriangleTest {
         Assertions.assertEquals(edges[1].getLength(), 70.71, 0.01);
         Assertions.assertEquals(edges[2].getLength(), 100.0, 0.01);
         Circle circle = triangle.getCircumCircle();
-        double radius = circle.getRadius();
+        double radius = circle.radius();
         Assertions.assertEquals(50.0, radius, 0.01);
     }
 }

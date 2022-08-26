@@ -20,7 +20,7 @@ Generate artistic bitmap and/or vector graphic images using [Delaunay](https://e
 
 ## Build
 
-**Java 11** is necessary to be able to build the project!
+**Java 17** is necessary to be able to build the project!
 
 ```
 git clone https://github.com/Ernyoke/DelaunayImage.git

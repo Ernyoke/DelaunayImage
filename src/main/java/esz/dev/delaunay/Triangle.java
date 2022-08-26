@@ -50,6 +50,6 @@ public class Triangle {
     }
 
     public Point[] getVertices() {
-        return new Point[] {ab.getA(), bc.getA(), ca.getA()};
+        return new Point[] {ab.a(), bc.a(), ca.a()};
     }
 }
