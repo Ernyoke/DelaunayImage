@@ -1,8 +1,8 @@
 package delaunay;
 
-import esz.dev.delaunay.Circle;
-import esz.dev.delaunay.Edge;
-import esz.dev.delaunay.Triangle;
+import esz.dev.delaunay.bowyerWatson.Circle;
+import esz.dev.delaunay.bowyerWatson.Edge;
+import esz.dev.delaunay.bowyerWatson.Triangle;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.opencv.core.Point;

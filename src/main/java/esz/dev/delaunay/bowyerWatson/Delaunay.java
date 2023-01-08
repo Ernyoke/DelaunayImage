@@ -1,4 +1,4 @@
-package esz.dev.delaunay;
+package esz.dev.delaunay.bowyerWatson;
 
 import org.opencv.core.Point;
 import org.opencv.core.Size;

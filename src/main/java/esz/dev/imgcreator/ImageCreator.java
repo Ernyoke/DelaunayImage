@@ -1,13 +1,11 @@
 package esz.dev.imgcreator;
 
-import esz.dev.delaunay.Triangle;
 import esz.dev.imgcreator.fillcolor.FillColorInterface;
 import lombok.RequiredArgsConstructor;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor

@@ -1,7 +1,6 @@
 package esz.dev;
 
 import esz.dev.argparse.ArgumentParser;
-import esz.dev.delaunay.Delaunay;
 import esz.dev.generate.Generator;
 
 import java.io.IOException;

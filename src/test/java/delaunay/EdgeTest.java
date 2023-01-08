@@ -1,6 +1,6 @@
 package delaunay;
 
-import esz.dev.delaunay.Edge;
+import esz.dev.delaunay.bowyerWatson.Edge;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.opencv.core.Point;

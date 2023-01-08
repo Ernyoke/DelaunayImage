@@ -1,6 +1,5 @@
 package esz.dev.imgcreator;
 
-import esz.dev.delaunay.Triangle;
 import esz.dev.imgcreator.fillcolor.FillColorInterface;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;

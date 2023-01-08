@@ -1,7 +1,6 @@
 package esz.dev.imgcreator;
 
 import esz.dev.argparse.Arguments;
-import esz.dev.delaunay.Triangle;
 import esz.dev.imgcreator.fillcolor.BgrFillColor;
 import esz.dev.imgcreator.fillcolor.FillColorInterface;
 import esz.dev.imgcreator.fillcolor.GrayFillColor;
