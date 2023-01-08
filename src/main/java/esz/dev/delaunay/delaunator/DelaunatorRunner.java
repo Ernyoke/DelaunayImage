@@ -8,24 +8,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Runner implements DelaunayRunner {
+public class DelaunatorRunner implements DelaunayRunner {
     @Override
     public List<List<Point>> run(List<Point> edgePoints, Size imageSize, boolean deleteBorder) {
         List<DPoint> points = edgePoints.stream().map(point -> new DPoint(point.x, point.y))
                 .collect(Collectors.toCollection(ArrayList::new));
-        points.addAll(createInitialSuperTriangle(imageSize));
+        List<DPoint> superTriangle = createInitialSuperTriangle(imageSize);
+        points.addAll(superTriangle);
 
-        List<List<Point>> result = new ArrayList<>();
-        Delaunator delaunator = new Delaunator(points);
-        for (DTriangle triangle : delaunator.getTriangles()) {
-            result.add(List.of(
-                    new Point(triangle.a.x, triangle.a.y),
-                    new Point(triangle.b.x, triangle.b.y),
-                    new Point(triangle.c.x, triangle.c.y)
-            ));
+        List<DTriangle> triangles = new Delaunator(points).getTriangles();
+
+        if (deleteBorder) {
+            triangles = triangles.stream().filter(triangle -> superTriangle.stream()
+                            .noneMatch(st -> List.of(triangle.a, triangle.b, triangle.c).contains(st)))
+                    .toList();
         }
 
-        return result;
+        return triangles.stream().map(triangle -> List.of(
+                new Point(triangle.a.x, triangle.a.y),
+                new Point(triangle.b.x, triangle.b.y),
+                new Point(triangle.c.x, triangle.c.y)
+        )).toList();
     }
 
     private List<DPoint> createInitialSuperTriangle(Size size) {

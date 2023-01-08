@@ -3,8 +3,6 @@ package esz.dev.generate;
 import esz.dev.argparse.Arguments;
 import esz.dev.argparse.EdgeDetectionAlgorithm;
 import esz.dev.delaunay.DelaunayRunner;
-import esz.dev.delaunay.bowyerWatson.Delaunay;
-import esz.dev.delaunay.delaunator.Runner;
 import esz.dev.imgcreator.ImageCreator;
 import esz.dev.imgcreator.ImgCreatorBuilder;
 import org.opencv.core.*;
@@ -65,7 +63,8 @@ public class Generator {
         Verbose.printEdgePointsDetected(arguments);
 
         // get triangles form edge points
-        DelaunayRunner delaunayRunner = new Runner();
+        var alg = arguments.getDelaunayAlgorithm();
+        DelaunayRunner delaunayRunner = DelaunayRunner.builder(alg);
         List<List<Point>> triangles = delaunayRunner.run(edgePoints, originalImage.size(), arguments.isDeleteBorder());
         Verbose.printMeshCreated(arguments);
 

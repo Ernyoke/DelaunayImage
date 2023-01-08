@@ -25,6 +25,9 @@ public class Arguments {
     private final EdgeDetectionAlgorithm edgeDetectionAlgorithm = EdgeDetectionAlgorithm.SOBEL;
 
     @Builder.Default
+    private final DelaunayAlgorithm delaunayAlgorithm = DelaunayAlgorithm.DELAUNATOR;
+
+    @Builder.Default
     private final int sobelKernelSize = 3;
 
     @Builder.Default

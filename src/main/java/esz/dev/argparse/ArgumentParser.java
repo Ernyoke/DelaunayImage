@@ -23,6 +23,7 @@ public class ArgumentParser {
         dispatchToArgumentHandler.put("-vx", this::setOutputVerticesFlag);
         dispatchToArgumentHandler.put("-wire", this::setWireFrameFlag);
         dispatchToArgumentHandler.put("-dbf", this::setDeleteBorderFlag);
+        dispatchToArgumentHandler.put("-alg", this::setDelaunayAlgorithm);
     }
 
     private int parseInt(String argToPParse, String prevArg) {
@@ -132,6 +133,12 @@ public class ArgumentParser {
         }
     }
 
+    private void setDelaunayAlgorithm(String argument) {
+        checkNextArgumentsExistence(1, "No argument is present after " + argument + "!");
+        builder.delaunayAlgorithm(DelaunayAlgorithm.fromString(argStack.poll()).orElseThrow(() ->
+                new IllegalArgumentException("Invalid edge detection algorithm! Allowed values are: bw, delaunator")));
+    }
+
     public static void showHelp() {
         System.out.print("\n");
         System.out.print("----Usage---\n");
@@ -156,6 +163,7 @@ public class ArgumentParser {
         System.out.print("-v: activate console logging. Default value: false \n");
         System.out.print("-wire: draw only wireframe for the triangles. Default value: false \n");
         System.out.print("-dbf: Delete border and all of the triangles which have a node on the border. Default value: false \n");
+        System.out.print("-alg: Delaunay algorithm to be used. Accepted values: bw, delaunator. Default value: delaunator \n");
         System.out.print("\n");
         System.out.print("Examples: \n");
         System.out.print("Example of usage: java -jar delaunay.jar in.png out.png -ea laplacian -sk 5 -max 2000 -t 200 -v \n");
